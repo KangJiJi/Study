@@ -41,15 +41,16 @@ function stack(size) {
 
 // Use
 var stack = new stack(20); //Make stack with size 20.
-var data_1 = new data("number 1"); // Make data_1
-var data_2 = new data("number 2"); // Make data_2
-var data_3 = new data("number 3"); // Make data_3
+var data_1 = new data("data 1"); // Make data_1
+var data_2 = new data("data 2"); // Make data_2
+var data_3 = new data("data 3"); // Make data_3
 
-console.log(stack.isEmpty()); // True
-console.log(stack.top); // 1
+console.log("isEmpty: " + stack.isEmpty()); // True
+console.log("TOS: " + stack.top); // 1
 // stack.pop(); // error
 stack.push(data_1);
 stack.push(data_2);
 stack.pop(); // return data_2
 stack.push(data_3);
-console.log(stack.stack); // stack = [data_1, data_2]
+console.log("First stack: " + stack.stack[1].data); // stack[1] = [data_1]
+console.log("Second stack: " + stack.stack[2].data); // stack[2] = [data_3]
