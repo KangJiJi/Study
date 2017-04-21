@@ -11,8 +11,8 @@ function stack(size) {
     this.top = 1;
     //Input data in TOS.
     this.push = (data) => {
-        //Check the stack
         if (this.top > size)
+            //Check the stack
             return false;
         else {
             this.stack[this.top] = data;
@@ -21,8 +21,8 @@ function stack(size) {
     };
     //Output data in TOS.
     this.pop = () => {
-        //Check the stack
         if (this.isEmpty == true)
+            //Check the stack
             return false;
         else {
             this.top--;

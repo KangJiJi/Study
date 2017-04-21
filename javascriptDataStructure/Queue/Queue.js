@@ -13,9 +13,9 @@ function queue(size) {
     // Front means tail.
     this.rear = 0;
     // Input data in queue.
-    this.put = (data) => {
-        // Check if queue is full.
+    this.inQueue = (data) => {
         if (this.sizeCheck == size)
+            // Check if queue is full.
             return flase;
         else {
             this.queue[this.rear] = data;
@@ -24,8 +24,9 @@ function queue(size) {
         }
     };
     // Output data in queue
-    this.get = () => {
+    this.deQueue = () => {
         if(this.isEmpty())
+            // Check if queue is full.
             return flase;
         else {
             var tempData = this.queue[this.front];

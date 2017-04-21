@@ -1,122 +1,122 @@
-//Make data.
+call by value //Make data.
 function node(data) {
-    this.data = data;
-    this.preNode = null; // Previous node
-    this.nextNode = null; // Next node
+	this.data = data;
+	this.preNode = null; // Previous node
+	this.nextNode = null; // Next node
 }
 
 function doubliyLinkedList() {
-    // Count number of node
-    this.numberOfNode = 0;
-    // Make headNode variation
-    this.headNode;
-    // Make tailNode variation
-    this.tailNode;
-    // Add node at head
-    this.addHead = (node) => {
-        // Exception handling when numberOfNode is zero
-        if (this.numberOfNode == 0) {
-            this.headNode = node;
-            this.tailNode = node;
-        } else {
-            // Use call by reference
-            node.nextNode = this.headNode;
-            this.headNode.preNode = node;
-            this.headNode = node;
-        }
-        this.numberOfNode++;
-    };
-    // Add node at tail
-    this.addTail = (node) => {
-        // Exception handling when numberOfNode is zero
-        if (this.numberOfNode == 0) {
-            this.headNode = node;
-            this.tailNode = node;
-        } else {
-            // Use call by reference
-            this.tailNode.nextNode = node;
-            node.preNdoe = this.tailNode;
-            this.tailNode = node;
-        }
-        this.numberOfNode++;
-    };
-    // Add node at index th
-    this.addNode = (node, index) => {
-        // Exception handling when numberOfNode is zero
-        if (this.numberOfNode == 0) {
-            this.headNode = node;
-            this.tailNode = node;
-        } else if (index > this.numberOfNode) {
-            return false;
-        } else if (index == 1) {
-            this.addHead(node);
-        } else if (index == this.numberOfNode) {
-            this.addTail(node);
-        } else {
-            // Use call by reference
-            var tempNextNode = this.searchNode(index);
-            var tempPreNode = this.searchNode(index - 1);
-            tempPreNode.nextNode = node;
-            node.preNode = tempPreNode;
-            tempNextNode.preNode = node;
-            node.nextNode = tempNextNode;
-        }
-        this.numberOfNode++;
-    };
-    // Erase the index th node
-    this.eraseNode = (index) => {
-        // Exception handling when numberOfNode is zero
-        if (this.numberOfNode == 0) {
-            return false;
-        } else {
-            // Use call by reference
-            var tempNextNode = this.searchNode(index + 1);
-            var tempPreNode = this.searchNode(index - 1);
-            tempNextNode.preNode = tempPreNode;
-            tempPreNode.nextNode = tempNextNode;
-            delete this.searchNode(index);
-            this.numberOfNode--;
-        }
-    };
-    // Return node at head
-    this.peek = () => {
-        // Exception handling when numberOfNode is zero
-        if (this.numberOfNode == 0) {
-            return false;
-        } else {
-            return this.headNode;
-        }
-    };
-    // Print the index th node
-    this.printNode = (index) => {
-        // Exception handling when numberOfNode is zero
-        if (this.numberOfNode == 0) {
-            return false;
-        } else {
-            console.log(index + "th node: " + this.searchNode(index).data);
-        }
-    };
-    // Search the index th node
-    this.searchNode = (index) => {
-        // Exception handling when numberOfNode is zero
-        if (this.numberOfNode < index) {
-            return false;
-        } else {
-            var tempPresentNode = this.headNode
-            for (var i = 1; i < index; i++) {
-                tempPresentNode = tempPresentNode.nextNode;
-            }
-            return tempPresentNode;
-        }
-    };
-    // Returns true if the stack is empty, or return false otherwise.
-    this.isEmpty = () => {
-        // Exception handling when numberOfNode is zero
-        if (this.numberOfNode == 0)
-            return true;
-        else
-            return false;
-    }
+	// Count number of node
+	this.numberOfNode = 0;
+	// Make headNode variation
+	this.headNode;
+	// Make tailNode variation
+	this.tailNode;
+	// Add node at head
+	this.addHead = (node) => {
+		if (this.numberOfNode == 0) {
+			// Exception handling when numberOfNode is zero
+			this.headNode = node;
+			this.tailNode = node;
+		} else {
+			// Use call by value
+			node.nextNode = this.headNode;
+			this.headNode.preNode = node;
+			this.headNode = node;
+		}
+		this.numberOfNode++;
+	};
+	// Add node at tail
+	this.addTail = (node) => {
+		if (this.numberOfNode == 0) {
+			// Exception handling when numberOfNode is zero
+			this.headNode = node;
+			this.tailNode = node;
+		} else {
+			// Use call by value
+			this.tailNode.nextNode = node;
+			node.preNdoe = this.tailNode;
+			this.tailNode = node;
+		}
+		this.numberOfNode++;
+	};
+	// Add node at index th
+	this.addNode = (node, index) => {
+		if (this.numberOfNode == 0) {
+			// Exception handling when numberOfNode is zero
+			this.headNode = node;
+			this.tailNode = node;
+		} else if (index > this.numberOfNode) {
+			return false;
+		} else if (index == 1) {
+			this.addHead(node);
+		} else if (index == this.numberOfNode) {
+			this.addTail(node);
+		} else {
+			// Use call by value
+			var tempNextNode = this.searchNode(index);
+			var tempPreNode = this.searchNode(index - 1);
+			tempPreNode.nextNode = node;
+			node.preNode = tempPreNode;
+			tempNextNode.preNode = node;
+			node.nextNode = tempNextNode;
+		}
+		this.numberOfNode++;
+	};
+	// Erase the index th node
+	this.eraseNode = (index) => {
+		if (this.numberOfNode == 0) {
+			// Exception handling when numberOfNode is zero
+			return false;
+		} else {
+			// Use call by value
+			var tempNextNode = this.searchNode(index + 1);
+			var tempPreNode = this.searchNode(index - 1);
+			tempNextNode.preNode = tempPreNode;
+			tempPreNode.nextNode = tempNextNode;
+			delete this.searchNode(index);
+			this.numberOfNode--;
+		}
+	};
+	// Return node at head
+	this.peek = () => {
+		if (this.numberOfNode == 0) {
+			// Exception handling when numberOfNode is zero
+			return false;
+		} else {
+			return this.headNode;
+		}
+	};
+	// Print the index th node
+	this.printNode = (index) => {
+		if (this.numberOfNode == 0) {
+			// Exception handling when numberOfNode is zero
+			return false;
+		} else {
+			console.log(index + "th node: " + this.searchNode(index).data);
+		}
+	};
+	// Search the index th node
+	this.searchNode = (index) => {
+		if (this.numberOfNode < index) {
+			// Exception handling when numberOfNode is smaller than index
+			return false;
+		} else {
+			var tempPresentNode = this.headNode
+			for (var i = 1; i < index; i++) {
+				tempPresentNode = tempPresentNode.nextNode;
+			}
+			return tempPresentNode;
+		}
+	};
+	// Returns true if the stack is empty, or return false otherwise.
+	this.isEmpty = () => {
+		// Exception handling when numberOfNode is zero
+		if (this.numberOfNode == 0)
+			return true;
+		else
+			return false;
+	}
 }
 
 var doubliyLinkedList = new doubliyLinkedList();
