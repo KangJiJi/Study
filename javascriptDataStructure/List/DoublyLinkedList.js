@@ -1,4 +1,4 @@
-call by value //Make data.
+//Make data.
 function node(data) {
 	this.data = data;
 	this.preNode = null; // Previous node
