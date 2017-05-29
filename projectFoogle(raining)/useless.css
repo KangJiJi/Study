@@ -1,0 +1,155 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+#wrapper {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#main_menu {
+    width: 100%;
+    position: absolute;
+    z-index: 2;
+}
+
+#main_menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 20 20 0 0;
+}
+
+#main_menu ul a:link {
+    color: black;
+    text-decoration: none;
+}
+
+#main_menu ul a:visited {
+    color: black;
+    text-decoration: none;
+}
+
+#main_menu ul a:hover {
+    color: black;
+    text-decoration: underline;
+}
+
+#main_menu li {
+    margin: 0;
+    padding: 0 10 0 10;
+    border: 0;
+    float: right;
+}
+
+#main_section {
+    width: 100%;
+    height: 100%;
+    margin-bottom: -43px;
+}
+
+#canvas_id {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+}
+
+#canvas {
+    display: block;
+}
+
+#logo_search {
+    position: absolute;
+    top: 190px;
+    left: 50%;
+    z-index: 2;
+    width: 630px;
+    margin-left: -325;
+}
+
+#main_logo {
+    text-align: center;
+}
+
+#search_form {
+    width: 620px;
+    height: 44px;
+    text-align: center;
+}
+
+#search_out_box {
+    margin: auto;
+}
+
+#search_input {
+    display: inline-block;
+    border: 1px solid #f2f2f2;
+    box-shadow: 4px 4px 8px 0 #f2f2f9;
+    padding: 15px 15px 15px 15px;
+}
+
+#main_input {
+    width: 363px;
+    border: none;
+    outline: none;
+}
+
+#search_button {
+    background: white;
+    border: none;
+    outline: none;
+}
+
+#main_footer {
+    width: 100%;
+    height: 40px;
+    background-color: #f2f2f2;
+    text-align: center;
+    border-top: 0.1px solid gray;
+}
+
+#main_footer P {
+    margin: 0;
+    padding: 0;
+}
+
+#popup {
+    display: none;
+    border: 2px solid gray;
+    position: absolute;
+}
+
+#login:hover #popup {
+    display: inline-block;
+    margin-left: -110px;
+    width: 170px;
+}
+
+#login:hover #idInput {
+    outline: none;
+    width : 170px;
+}
+
+#login:hover #passwordInput {
+    outline: none;
+    width : 170px;
+}
+
+#login:hover #login {
+    border: 1px solid #f2f2f2;
+    width: 82px;
+    text-align: center;
+}
+
+#login:hover #signUp {
+    border: 1px solid #f2f2f2;
+    width: 83px;
+    text-align: center;
+}
+
+#signUpAndLogIn {
+    display: flex;
+}
