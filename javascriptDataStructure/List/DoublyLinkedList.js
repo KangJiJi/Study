@@ -1,19 +1,26 @@
 //Make data.
-function node(data) {
-	this.data = data;
-	this.preNode = null; // Previous node
-	this.nextNode = null; // Next node
+class node {
+	constructor(data) {
+		this.data = data;
+		// Previous node
+		this.preNode = null;
+		// Next node
+		this.nextNode = null;
+	}
 }
 
-function doubliyLinkedList() {
-	// Count number of node
-	this.numberOfNode = 0;
-	// Make headNode variation
-	this.headNode;
-	// Make tailNode variation
-	this.tailNode;
+class doubliyLinkedList {
+	constructor() {
+		// Count number of node
+		this.numberOfNode = 0;
+		// Make headNode variation
+		this.headNode;
+		// Make tailNode variation
+		this.tailNode;
+	}
+
 	// Add node at head
-	this.addHead = (node) => {
+	_addHead(node) {
 		if (this.numberOfNode == 0) {
 			// Exception handling when numberOfNode is zero
 			this.headNode = node;
@@ -27,7 +34,7 @@ function doubliyLinkedList() {
 		this.numberOfNode++;
 	};
 	// Add node at tail
-	this.addTail = (node) => {
+	_addTail(node) {
 		if (this.numberOfNode == 0) {
 			// Exception handling when numberOfNode is zero
 			this.headNode = node;
@@ -41,7 +48,7 @@ function doubliyLinkedList() {
 		this.numberOfNode++;
 	};
 	// Add node at index th
-	this.addNode = (node, index) => {
+	_addNode(node, index) {
 		if (this.numberOfNode == 0) {
 			// Exception handling when numberOfNode is zero
 			this.headNode = node;
@@ -49,13 +56,13 @@ function doubliyLinkedList() {
 		} else if (index > this.numberOfNode) {
 			return false;
 		} else if (index == 1) {
-			this.addHead(node);
+			this._addHead(node);
 		} else if (index == this.numberOfNode) {
-			this.addTail(node);
+			this._addTail(node);
 		} else {
 			// Use call by value
-			var tempNextNode = this.searchNode(index);
-			var tempPreNode = this.searchNode(index - 1);
+			var tempNextNode = this._searchNode(index);
+			var tempPreNode = this._searchNode(index - 1);
 			tempPreNode.nextNode = node;
 			node.preNode = tempPreNode;
 			tempNextNode.preNode = node;
@@ -64,22 +71,22 @@ function doubliyLinkedList() {
 		this.numberOfNode++;
 	};
 	// Erase the index th node
-	this.eraseNode = (index) => {
+	_eraseNode(index) {
 		if (this.numberOfNode == 0) {
 			// Exception handling when numberOfNode is zero
 			return false;
 		} else {
 			// Use call by value
-			var tempNextNode = this.searchNode(index + 1);
-			var tempPreNode = this.searchNode(index - 1);
+			var tempNextNode = this._searchNode(index + 1);
+			var tempPreNode = this._searchNode(index - 1);
 			tempNextNode.preNode = tempPreNode;
 			tempPreNode.nextNode = tempNextNode;
-			delete this.searchNode(index);
+			delete this._searchNode(index);
 			this.numberOfNode--;
 		}
 	};
 	// Return node at head
-	this.peek = () => {
+	_peek() {
 		if (this.numberOfNode == 0) {
 			// Exception handling when numberOfNode is zero
 			return false;
@@ -88,16 +95,16 @@ function doubliyLinkedList() {
 		}
 	};
 	// Print the index th node
-	this.printNode = (index) => {
+	_printNode(index) {
 		if (this.numberOfNode == 0) {
 			// Exception handling when numberOfNode is zero
 			return false;
 		} else {
-			console.log(index + "th node: " + this.searchNode(index).data);
+			console.log(index + "th node: " + this._searchNode(index).data);
 		}
 	};
 	// Search the index th node
-	this.searchNode = (index) => {
+	_searchNode(index) {
 		if (this.numberOfNode < index) {
 			// Exception handling when numberOfNode is smaller than index
 			return false;
@@ -110,7 +117,7 @@ function doubliyLinkedList() {
 		}
 	};
 	// Returns true if the stack is empty, or return false otherwise.
-	this.isEmpty = () => {
+	_isEmpty() {
 		// Exception handling when numberOfNode is zero
 		if (this.numberOfNode == 0)
 			return true;
@@ -119,23 +126,23 @@ function doubliyLinkedList() {
 	}
 }
 
-var doubliyLinkedList = new doubliyLinkedList();
-var node_1 = new node("node 1");
-var node_2 = new node("node 2");
-var node_3 = new node("node 3");
+let jsDoubliyLinkedList = new doubliyLinkedList();
+const node_1 = new node("node 1");
+const node_2 = new node("node 2");
+const node_3 = new node("node 3");
 
-console.log("isEmpty: " + doubliyLinkedList.isEmpty()); // True
-doubliyLinkedList.addNode(node_1); // Add node_1
-doubliyLinkedList.addHead(node_2); // Add ndoe_2 at head
-doubliyLinkedList.addTail(node_3); // Add node_3 at tail
+console.log("_isEmpty: " + jsDoubliyLinkedList._isEmpty()); // True
+jsDoubliyLinkedList._addNode(node_1); // Add node_1
+jsDoubliyLinkedList._addHead(node_2); // Add ndoe_2 at head
+jsDoubliyLinkedList._addTail(node_3); // Add node_3 at tail
 
-doubliyLinkedList.printNode(1); // Print node_2
-doubliyLinkedList.printNode(2); // Print node_1
-doubliyLinkedList.printNode(3); // Print node_3
+jsDoubliyLinkedList._printNode(1); // Print node_2
+jsDoubliyLinkedList._printNode(2); // Print node_1
+jsDoubliyLinkedList._printNode(3); // Print node_3
 
-doubliyLinkedList.eraseNode(2);
+jsDoubliyLinkedList._eraseNode(2);
 console.log("After erasing.");
-doubliyLinkedList.printNode(1); // Print node_2
-doubliyLinkedList.printNode(2); // Print node_3
+jsDoubliyLinkedList._printNode(1); // Print node_2
+jsDoubliyLinkedList._printNode(2); // Print node_3
 
-console.log("Frist node: " + doubliyLinkedList.peek().data); // Print node_2;
+console.log("Frist node: " + jsDoubliyLinkedList._peek().data); // Print node_2;

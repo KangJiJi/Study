@@ -1,17 +1,23 @@
 //Make data.
-function data(data) {
-    this.data = data;
-}
+class data {
+    constructor(data) {
+        this.data = data;
+    };
+};
 
-// If it is a singleton pattern, it is better.
-function stack(size) {
-    //Make stack.
-    this.stack = new Array(size);
-    //Top means TOS(Top Of Stack).
-    this.top = 1;
+class stack {
+    constructor(size) {
+        //Make stack.
+        this.stack = new Array(size);
+        //Top means TOS(Top Of Stack).
+        this.top = 0;
+        //Define size of stack.
+        this.size = size;
+    }
+
     //Input data in TOS.
-    this.push = (data) => {
-        if (this.top > size)
+    _push(data) {
+        if (this.top > this.size)
             //Check the stack
             return false;
         else {
@@ -20,8 +26,8 @@ function stack(size) {
         }
     };
     //Output data in TOS.
-    this.pop = () => {
-        if (this.isEmpty == true)
+    _pop() {
+        if (this._isEmpty == true)
             //Check the stack
             return false;
         else {
@@ -30,27 +36,26 @@ function stack(size) {
         }
     };
     //Returns true if the stack is empty, or return false otherwise.
-    this.isEmpty = () => {
-        if (this.top == 1)
+    _isEmpty() {
+        if (this.top == 0)
             return true;
         else
             return false;
     };
 };
 
-
 // Use
-var stack = new stack(20); //Make stack with size 20.
-var data_1 = new data("data 1"); // Make data_1
-var data_2 = new data("data 2"); // Make data_2
-var data_3 = new data("data 3"); // Make data_3
+let jsStack = new stack(20); //Make stack with size 20.
+const data_1 = new data("data 1"); // Make data_1
+const data_2 = new data("data 2"); // Make data_2
+const data_3 = new data("data 3"); // Make data_3
 
-console.log("isEmpty: " + stack.isEmpty()); // True
-console.log("TOS: " + stack.top); // 1
+console.log("isEmpty: " + jsStack._isEmpty()); // True
+console.log("TOS: " + jsStack.top); // 0
 // stack.pop(); // error
-stack.push(data_1);
-stack.push(data_2);
-stack.pop(); // return data_2
-stack.push(data_3);
-console.log("First stack: " + stack.stack[1].data); // stack[1] = [data_1]
-console.log("Second stack: " + stack.stack[2].data); // stack[2] = [data_3]
+jsStack._push(data_1);
+jsStack._push(data_2);
+jsStack._pop(); // return data_2
+jsStack._push(data_3);
+console.log("First stack: " + jsStack.stack[0].data); // stack[0] = [data_1]
+console.log("Second stack: " + jsStack.stack[1].data); // stack[1] = [data_3]
