@@ -17,8 +17,7 @@ class doubliyLinkedList {
 		this.headNode;
 		// Make tailNode variation
 		this.tailNode;
-	}
-
+	};
 	// Add node at head
 	_addHead(node) {
 		if (this.numberOfNode == 0) {
