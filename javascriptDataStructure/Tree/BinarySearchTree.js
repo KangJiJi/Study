@@ -56,7 +56,93 @@ class binarySearchTree {
 			// Exception handling when numberOfNode is zero.
 			return false;
 		} else {
-			//TODO
+			let parentNode = null;
+			let currentNode = this.rootNode;
+			// Find node.
+			while(currentNode.data != data) {
+				if(data < currentNode.data) {
+					parentNode = currentNode;
+					currentNode = currentNode.leftNode;
+				} else {
+					parentNode = currentNode;
+					currentNode = currentNode.rightNode;
+				}
+				if(currentNode == null) {
+					// Returns false when there is no matching data.
+					return false;
+				}
+			}
+
+			// When there is matching data.
+			if(currentNode.leftNode == null && currentNode.rightNode == null) {
+				// When there is no child.
+				if(parentNode == null) {
+					// When remove root node.
+					this.rootNode = null;
+				} else {
+					if(parentNode.leftNode.data == data) {
+						parentNode.leftNode = null;
+					} else {
+						parentNode.rightNode = null;
+					}
+				}
+			} else if(currentNode.leftNode == null || currentNode.rightNode == null) {
+				// When there is no left node or right node.
+
+				if(parentNode == null) {
+					// When remove root node.
+
+				} else {
+					if(parentNode.leftNode.data == data) {
+						parentNode.leftNode = null;
+					} else {
+						parentNode.rightNode = null;
+					}
+				}
+			} else {
+				// When there is left and right node.
+				if(parentNode == null) {
+					// When remove root node.
+
+				} else {
+					if(parentNode.leftNode.data == data) {
+						parentNode.leftNode = null;
+					} else {
+						parentNode.rightNode = null;
+					}
+				}
+			}
+		}
+			// if(currentNode.data == data) {
+			// 	// When currentNode.data and data are same.
+			//
+			// } else if (currentNode.data > data) {
+			// 	// When currentNode.data is bigger than data.
+			//
+			// } else {
+			// 	// When data is bigger than currentNode.data.
+			//
+			// }
+		this.numberOfNode--;
+	};
+	_findParentNode(data) {
+		if(this.numberOfNode == 0) {
+			// Exception handling when numberOfNode is zero.
+			return false;
+		} else {
+			let currentNode = this.rootNode;
+			while(currentNode.data != data) {
+				if(data < currentNode.data) {
+					currentNode = currentNode.leftNode;
+				} else {
+					currentNode = currentNode.rightNode;
+				}
+				if(currentNode == null) {
+					// Returns false when there is no matching data.
+					return false;
+				}
+			}
+			return currentNode;
 		}
 	};
 	// Print all node in tree using preOrder.
@@ -113,7 +199,7 @@ class binarySearchTree {
 				}
 				if(currentNode == null) {
 					// Returns null when there is no matching data.
-					return null;
+					return false;
 				}
 			}
 			return currentNode;
@@ -177,3 +263,5 @@ jsBinarySearchTree._inOrder(); // 1 2 3 4 5 6 7 8 9 10
 console.log('MAXIMUM: ' + jsBinarySearchTree._getMax().data); // 10
 console.log('MINIMUM: ' + jsBinarySearchTree._getMin().data); // 1
 console.log('Find node: ' + jsBinarySearchTree._findNode(5).data); // 5
+
+jsBinarySearchTree._removeNode(1);
