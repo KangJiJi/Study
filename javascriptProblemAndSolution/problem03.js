@@ -25,6 +25,8 @@ obj.fn();
  * 
  * var obj = { a: console.log(this) }는 obj.a = console.log(this)와 같음.
  * 
+ * 함수를 호출하는 시점에 . 앞에 있는 것이 this로 바인딩 됨.
+ * 
  * setTimeout(obj.fn, 100);
  * 		var temp = obj.fn();
  * 		setTimeout(temp, 100);으로 변환하고 실행.
