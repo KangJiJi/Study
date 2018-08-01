@@ -29,3 +29,26 @@ c.f();
 
 console.log(p.a);
 console.log(c.a);
+
+
+
+/***
+ * answer: p.a() === c.a() ([1, 2, 4])
+ * 
+ * 
+ * 
+ * Prototype
+ * 
+ * prototype
+ * 		다른 객체의 기반이 되는 객체
+ * 		기본적으로 제일 상위는 Object
+ * 
+ * new 연산자
+ * 		함수의 prototype을 __proto__로 가지는 객체 생성
+ * 		위의 객체를 this로 바인딩하고 함수 실행
+ * 		그리고 함수의 리턴 값이 객체면 객체 반환
+ * 		아니면 this를 반환
+ * 
+ * prototype chaining
+ * 		__proto__ 링크를 계속 따라서 property를 찾고, 없으면 undefined 반환.
+ */
