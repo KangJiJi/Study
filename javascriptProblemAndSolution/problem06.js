@@ -42,6 +42,7 @@ console.log(c.a);
  * prototype
  * 		다른 객체의 기반이 되는 객체
  * 		기본적으로 제일 상위는 Object
+ * 		set과 get은 비대칭적
  * 
  * new 연산자
  * 		함수의 prototype을 __proto__로 가지는 객체 생성
@@ -52,3 +53,5 @@ console.log(c.a);
  * prototype chaining
  * 		__proto__ 링크를 계속 따라서 property를 찾고, 없으면 undefined 반환.
  */
+
+ // 출처: YouTube 김썬

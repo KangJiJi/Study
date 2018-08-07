@@ -44,3 +44,5 @@ abc();
  *     foo = function()도 실행 시점에 대입.
  *      변수 선언없이 변수에 값대입을 하면 global table에 변수를 추가하고 대입.
  */
+
+ // 출처: YouTube 김썬

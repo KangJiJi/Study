@@ -35,3 +35,5 @@ obj.fn();
  * this를 바꾸는 방법
  * 		call, apply, bind
  */
+
+ // 출처: YouTube 김썬
