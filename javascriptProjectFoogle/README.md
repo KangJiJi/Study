@@ -17,6 +17,6 @@ Project Foogle
 #### 2. 다시 입력창에 stop raining을 입력하면 비가 멈춘다.
 
 ## 아쉬운점
-#### 1. 비가 내려오는 에니메이션이 좀 어색하다.
-#### 2. Cross browser testing은 고려하지 않았다.
+#### 1. 비가 내려오는 애니메이션이 좀 어색하다.
+#### 2. Cross browser 지원은 고려하지 않았다.
 #### 3. JS에서도 몇몇을 함수로 빼거나 Refactoring 할 부분이 보인다.
