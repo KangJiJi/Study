@@ -5,5 +5,5 @@
 ## 3. [Javascript Problem and solution](https://github.com/KangJiJi/Study/tree/master/javascriptProblemAndSolution)
 ## 4. [Project Movie App](https://github.com/KangJiJi/Study/tree/master/javascriptProjectMovieApp)
 ## 5. [Project Mozzi front end](https://github.com/KangJiJi/Study/tree/master/javascriptProjectMozziFront)
-## 6. [Clean Code](https://github.com/KangJiJi/Study/tree/master/Clean%20Code)
+## 6. [Clean Code](https://github.com/KangJiJi/Study/tree/master/cleanCode)
 
