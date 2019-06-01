@@ -1,7 +1,9 @@
-Algorithmic Problem Solving Strategies(프로그래밍 대회에서 배우는 알고리즘 문제해결전략)
+Algorithmic Problem Solving Strategies<br>
+(프로그래밍 대회에서 배우는 알고리즘 문제해결전략)
 ====================================================================================
 
 2019년에 읽은 프로그래밍 대회에서 배우는 알고리즘 문제해결전략 책에 대한 정리다.<br>
+책에 나오는 문제들은 [알고스팟](https://book.algospot.com/problems.html)에서 확인이 가능하다.
 
 ## Chapter
 ### 01. [문제 해결과 프로그래밍 대회](https://github.com/KangJiJi/Study/tree/master/algorithmicProblemSolvingStrategies/chapter01)
