@@ -6,4 +6,4 @@
 ## 4. [Project Movie App](https://github.com/KangJiJi/Study/tree/master/javascriptProjectMovieApp)
 ## 5. [Project Mozzi front end](https://github.com/KangJiJi/Study/tree/master/javascriptProjectMozziFront)
 ## 6. [Clean Code](https://github.com/KangJiJi/Study/tree/master/cleanCode)
-
+## 7. [Algorithmic problem solving strategies](https://github.com/KangJiJi/Study/tree/master/algorithmicProblemSolvingStrategies)
