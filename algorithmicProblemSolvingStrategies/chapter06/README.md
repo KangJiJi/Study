@@ -124,4 +124,94 @@ bool hasWord(int y, int x, const string& word) {
 #### &nbsp;보글 게임에서 해당 단어를 이 위치에서 찾을 수 있는지 알기 위해 최대 아홉가지 정보를 알아야 한다. 주위 8가지 글자를 검사하는 경우는 형식이 같은 또 다른 문제다. 문제를 구성하는 조각들 중 하나를 뺐기 때문에, 이 문제들은 원래 문제의 일부라고 말할 수 있다. 이런 문제들을 원래 문제의 부분 문제라고 한다.
 
 ## 03. 문제: 소풍(문제 ID: PICNIC, 난이도: 하)
-#### &nbsp;
+#### &nbsp;안드로메다 유치원 익스프레스반에서는 다음 주에 율동공원으로 소풍을 갑니다. 원석 선생님은 소풍 때 학생들을 두 명씩 짝을 지어 행동하게 하려고 합니다. 그런데 서로 친구가 아닌 학생들끼리 짝을 지어 주면 서로 싸우거나 같이 돌아다니지 않기 때문에, 항상 서로 친구인 학생들끼리만 짝을 지어 줘야 합니다. 각 학생들의 쌍에 대해 이들이 서로 친구인지 여부가 주어질 때, 학생들을 짝지어줄 수 있는 방법의 수를 계산하는 프로그램을 작성하세요. 짝이 되는 학생들이 일부만 다르더라도 다른 방법이라고 봅니다. 예를 들어 다음 두 가지 방법은 서로 다른 방법입니다.
+#### (태연,제시카) (써니,티파니) (효연,유리)
+#### (태연,제시카) (써니,유리) (효연,티파니)
+
+* ### 시간 및 메모리 제한
+#### &nbsp;프로그램은 1초 내에 실행되어야 하고, 64MB 이하의 메모리만을 사용해야 한다.
+
+* ### 입력
+#### &nbsp;입력의 첫 줄에는 테스트 케이스의 수 C (C <= 50) 가 주어집니다. 각 테스트 케이스의 첫 줄에는 학생의 수 n (2 <= n <= 10) 과 친구 쌍의 수 m (0 <= m <= n*(n-1)/2) 이 주어집니다. 그 다음 줄에 m 개의 정수 쌍으로 서로 친구인 두 학생의 번호가 주어집니다. 번호는 모두 0 부터 n-1 사이의 정수이고, 같은 쌍은 입력에 두 번 주어지지 않습니다. 학생들의 수는 짝수입니다.
+
+* ### 출력
+#### &nbsp;각 테스트 케이스마다 한 줄에 모든 학생을 친구끼리만 짝지어줄 수 있는 방법의 수를 출력합니다.
+
+* ### 개인적 풀이
+#### &nbsp;만약 10P10으로 모든 경우의 수를 계산할 때는 10! * 50 = 1.8억 이렇게 경우의 수만 1억이 넘는다. 따라서 이렇게 풀면 안된다. 우리에게는 친구 쌍이 주어지기 때문에 이것을 이용해 만들 수 있는 경우의 수를 생각해보면 될 것 같다.
+```c++
+// 어렵다....너무 어렵다...
+int combinationFriend(int numberOfStudents, const vector<int>& friendList, const vector<int>& selectedFriends) {
+  // 기저 사례
+  if(selectedFriends.length() == numberOfStudents) { return 1; }
+  int result = 0;
+  for(int friendListIndex = 0; friendListIndex < friendList.length(); friendListIndex + 2) {
+    if(checkStudentsDuplecation(selectedFriends, { friendList[friendListIndex], friendList[friendListIndex + 1] })) {
+      // selectedFriends에 friendList[friendListIndex], friendList[friendListIndex + 1]를 추가하고, friendList에서 앞에 추가한 값을 빼고, 새롭게 combinationFriend를 호출한다.
+    } else {
+      // 조합을 다 못만들었는데 친구들이 중복되면 0을 반환
+      return 0;
+    }
+  }
+}
+```
+
+## 04. 풀이: 소풍
+
+* ### 완전 탐색
+#### &nbsp;완전 탐색을 이용해 조합을 모두 만들어 보는 것이다. 재귀 호출을 이용해 코드를 작성해 보자.
+
+* ### 중복으로 세는 문제
+#### &nbsp; 이 코드를 예제 입력을 이용해 실행해 보면 전혀 다른 답이 나온다. 이유는 한 경우를 중복으로 여러번 세고 있기 때문이다.
+```c++
+int n;
+bool areFriends[10][10];
+// taken[i] = i 번째 학생이 짝을 이미 찾았으면 true, 아니면 false
+int countPairings(bool taken[10]) {
+  // 기저 사례: 모든 학생이 찾을 찾았으면 한 가지 방법을 찾았으니 종료한다.
+  bool finished = true;
+  for(int i = 0; i < n; ++i) if(!taken[i]) finished = false;
+  if(finished) return 1;
+  int ret = 0;
+  // 서로 친구인 두 학생을 찾아 짝을 지어 준다.
+  for(int i = 0; i < n; ++i)
+    for(int j = 0; j < n; ++j)
+      if(!taken[i] && !taken[j] && areFriends[i][j]) {
+        taken[i] = taken[j] = true;
+        ret += countPairings(taken);
+        taken[i] = taken[j] = false;
+      }
+    return ret;
+}
+```
+#### 이 코드에는 두가지 문제점이 있다. 같은 학생 쌍을 두 번 짝지어 준다. 다른 순서로 학생들을 짝지어 주는 것을 서로 다른 경우로 세고 있다. 이 상황을 해결하기 위한 좋은 방법은 항상 특정 형태를 갖는 답만을 세는 것이다. 흔히 사용하는 방법으로는 같은 답 중에서 사전순으로 가장 먼저 오는 답 하나만을 세는 것이 있다. 이 속성을 강제하기 위해서 각 단계에서 남아 있는 학생들 중 가장 번호가 빠른 학생의 짝을 찾아 주도록 하면 됩니다.
+```c++
+int n;
+bool areFriends[10][10];
+// taken[i] = i 번째 학생이 짝을 이미 찾았으면 true, 아니면 false
+int countPairings(bool taken[10]) {
+  // 남은 학생들 중 가장 번호가 빠른 학생을 찾는다.
+  int firstFree = -1;
+  for(int i = 0; i < n; ++i) {
+    if(!taken[i]) {
+      firstFree = i;
+      break;
+    }
+  }
+  // 기저 사례: 모든 학생이 짝을 찾았으면 한 가지 방법을 찾았으니 종료한다.
+  if(firstFree == -1) return 1;
+  int ret = 0;
+  // 이 학생과 짝지을 학생을 결정한다.
+  for(int pairWith = firstFree + 1; pairWith < n; ++pairWith) {
+    if(!taken[pairWith] && areFriends[firstFree][pairWith]) {
+      taken[firstFree] = taken[pairWith] = true;
+      ret += countPairings(taken);
+      taken[firstFree] = taken[pairWith] = false;
+    }
+  }
+  return ret;
+}
+```
+
+* ### 답의 수의 상한
+#### &nbsp;프로그램을 짜기 전에 답의 수가 얼마나 될지 예측해 보고 모든 답을 만드는 데 시간이 얼마나 오래 걸릴지를 확인해야 한다.
