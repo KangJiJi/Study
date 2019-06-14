@@ -356,7 +356,7 @@ double dist[MAX][MAX]; // 두 도시 간의 거리를 저장하는 배열
 // visited: 각 도시의 방문 여부
 // currentLength: 지금까지 만든 경로의 길이
 // 나머지 도시들을 모두 방문하는 경로들 중 가장 짧은 것의 길이를 반환한다.
-double shortestPath(vector<int>& path, vector,bool.& visited, double currentLength) {
+double shortestPath(vector<int>& path, vector<bool>& visited, double currentLength) {
   // 기저 사례: 모든 도시를 다 방문했을 때는 시작 도시로 돌아가고 종료한다.
   if(path.size() == n)
     return currentLength + dist[path[0]][path.back()];
@@ -400,4 +400,71 @@ double shortestPath(vector<int>& path, vector,bool.& visited, double currentLeng
 #### &nbsp;각 테스트 케이스당 한 줄을 출력한다. 시계들을 모두 12시로 돌려놓기 위해 눌러야 할 스위치의 최소 수를 출력한다. 만약 이것이 불가능할 경우 -1 을 출력한다.
 
 * ### 개인적 풀이
-#### &nbsp;clocks[15]에 입력받은 배열을 저장한다. clocks배열 값을 12에서 빼고 3으로 나누면 눌러져야할 버튼의 횟수가 나온다. 이 횟수를 n이라 했을 때, n + 4m (m은 정수)번 눌러야 한다고 할 수 있다. 시계의 시간을 바꾸는 스위치는 10개가 있다. 또한 스위치를 누를때는 순서와 상관없이 항상 결과 값은 같다. 그리고 시간 제한이 10초이기 때문에 아마도 모든 경우을 시도해봐도 될 것 같다. 0번 버튼부터 눌러보거나 안 눌러보거나 두가지 경우로 나눠서 각각의 경우에서 다시 1번 버튼을 누르는 경우 안 누르는 경우 이렇게 나눠가면서 재귀적으로 계산해 보면 될 것 같다. 기저 사례는 최저로 버튼을 누른 횟수를 알아내는 것이기 때문에 모두가 12에 맞춰져 있으면 재귀함수를 끝내면 될 것 같다.
+#### &nbsp;clocks[15]에 입력받은 배열을 저장한다. clocks배열 값을 12에서 빼고 3으로 나누면 눌러져야할 버튼의 횟수가 나온다. 이 횟수를 n이라 했을 때, n + 4m (m은 정수)번 눌러야 한다고 할 수 있다. 시계의 시간을 바꾸는 스위치는 10개가 있다. 또한 스위치를 누를때는 순서와 상관없이 항상 결과 값은 같다. 그리고 시간 제한이 10초이기 때문에 아마도 모든 경우을 시도해봐도 될 것 같다. 0번 버튼부터 눌러보거나 안 눌러보거나 두가지 경우로 나눠서 각각의 경우에서 다시 1번 버튼을 누르는 경우 안 누르는 경우 이렇게 나눠가면서 재귀적으로 계산해 보면 될 것 같다. 기저 사례는 어떠한 버튼이 4번이상 눌러지면 종료 되게끔 만들면 될 것 같다.. 또한 이 경우들 중에서 아무리 눌러도 전부 12시로 맞추는 경우가 없을때는 걸러내야 한다. 만약 똑같은 버튼을 5번 누르면 그건 버튼 1번 누른 것과 같다. 한 버튼당 누를 수 있는 최대 횟수는 3번이다. 최소 값을 찾아야 하기 때문에 4번 이상 누르는 것은 의미가 없다.
+```c++
+// 기저 사례 검사를 위한 변수
+int check = 0;
+// 현재 버튼
+int switchNumber = 0;
+// 입력받은 배열
+vector<int> clocks;
+// 스위치들의 배열
+vector<vector<int> > switches{
+  { 0, 1, 2 }, { 3, 7, 9, 11 }, { 4, 10, 14, 15 }, { 0, 4, 5, 6, 7 }, { 6, 7, 8, 10, 12 },
+  { 0, 2, 14, 15 }, { 3, 14, 15 }, { 4, 5, 7, 14, 15 }, { 1, 2, 3, 4, 5 }, { 3, 4, 5, 9, 13 }
+};
+// 기저 사례를 위한 스위치 눌린 횟수
+vector<int> numberOfSwitchPressList{
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
+// 눌러져야 할 버튼의 횟수. 길이는 12
+vector<int> numberOfSwitchPressed = calculateNumberOfSwitchPressed(clocks);
+
+int calculateMinimum(vector<int>& numberOfSwitchPressed, vector<int>& numberOfSwitchPressList, int switchNumber) {
+  if(switchNumber == 10) switchNumber = 0;
+  // 기저 사례: 한 스위치가 4번 이상 눌려서 더이상 경우의 수를 계산하지 않아도 되는 경우
+  for(int i = 0; i < 10; i++) if(numberOfSwitchPressList[i] == 4) return -1;
+
+  // 기저 사례: 시계바늘이 12를 가리키고 있으면 check변수를 ++ 해서 검사를 한다.
+  for(int i = 0; i < 12; i++) if(numberOfSwitchPressed[i] == 0) check++;
+  if(check == 12) return sum(numberOfSwitchPressList);
+  else check = 0;
+
+  int ret = 0;
+  // switchNumber 버튼을 누른 경우
+  numberOfSwitchPressList[switchNumber]++;
+  for(int i = 0; i < switches[switchNumber].length(); i++) {
+    if(--numberOfSwitchPressed[switches[switchNumber][i]] == -1) {
+      // 눌러야하는 횟수가 -1이 되면 3번더 눌러야 12가 되기 때문에 3을 대입
+      numberOfSwitchPressed[switches[switchNumber][i]] = 3;
+    }
+  }
+  // 재귀적 호출
+  int firstCase = calculateMinimum(numberOfSwitchPressed, numberOfSwitchPressList, switchNumber++);
+  // 누르지 않은 경우를 계산하기 위해서 원래 상태로 돌린다
+  numberOfSwitchPressList[switchNumber]--;
+  for(int i = 0; i < switches[switchNumber].length(); i++) {
+    if(++numberOfSwitchPressed[switches[switchNumber][i]] == 4) {
+      // 눌러야하는 횟수가 4이 되면 누를 필요가 없기 때문에 0을 대입
+      numberOfSwitchPressed[switches[switchNumber][i]] = 0;
+    }
+  }
+  // switchNumber 버튼을 안 누른 경우
+  // 재귀적 호출
+  int secondCase = calculateMinimum(numberOfSwitchPressed, numberOfSwitchPressList, switchNumber++);
+  
+  if(firstCase == -1 && secondCase == -1)
+    ret = -1;
+  else if(firstCase == -1)
+    ret = secondCase;
+  else if(secondCase == -1)
+    ret = firstCase;
+  else if(firstCase < secondCase)
+    ret = firstCase;
+  else
+    ret = secondCase;
+
+  return ret;
+}
+```
+## 09. 풀이: 시계 맞추기
