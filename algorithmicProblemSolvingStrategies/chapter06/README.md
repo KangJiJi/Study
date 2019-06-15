@@ -423,6 +423,7 @@ vector<int> numberOfSwitchPressed = calculateNumberOfSwitchPressed(clocks);
 int calculateMinimum(vector<int>& numberOfSwitchPressed, vector<int>& numberOfSwitchPressList, int switchNumber) {
   if(switchNumber == 10) switchNumber = 0;
   // 기저 사례: 한 스위치가 4번 이상 눌려서 더이상 경우의 수를 계산하지 않아도 되는 경우
+  // 틀렸음: 이렇게 되면 아무 것도 누르지 않는 경우는 무한 루프로 실행된다.
   for(int i = 0; i < 10; i++) if(numberOfSwitchPressList[i] == 4) return -1;
 
   // 기저 사례: 시계바늘이 12를 가리키고 있으면 check변수를 ++ 해서 검사를 한다.
@@ -468,3 +469,65 @@ int calculateMinimum(vector<int>& numberOfSwitchPressed, vector<int>& numberOfSw
 }
 ```
 ## 09. 풀이: 시계 맞추기
+
+* ### 문제 변형하기
+#### &nbsp;이 문제는 있는 그대로 풀려고 하면 꽤나 복잡하다. 그러나 문제의 특성을 이용해 적절히 단순화하면 완전 탐색으로 해결할 수 있다. 처음 깨달아야 할 것은 스위치를 누르는 순서는 전혀 중요하지 않다는 것이다. 따라서 우리가 계산해야 할 것은 각 스위치를 몇 번이나 누를 것이냐 뿐이다. 시계는 12시간이 지나면 제 자리로 돌아온다는 점을 이용하면 무한한 조합의 수를 유한하게 바꿀 수 있다. 어떤 스위치건 간에 최대 세 번 이상 누를 일이 없다. 따라서 열개의 스위치를 누르는 경우의 수는 4 ^ 10개가 된다. 따라서 완전 탐색으로 무난하게 풀 수 있다.
+
+* ### 완전 탐색 구현하기
+#### &nbsp;문제를 모두 열 조각으로 나눈 후 각 조각에서 한 스위치를 누를 횟수를 정하는 식으로 구현됐다. 재귀 호출의 깊이가 정해져 있기 때문에 사실 이 코드는 10중 for문과 다르지 않지만, 이 쪽이 훨씬 구현하기도 편하고 디버깅하기도 쉽다.
+```c++
+const int INF = 9999, SWITCHES = 10, CLOCKS = 16;
+// linked[i][j] = 'x': i번 스위치와 j번 시계가 연결되어 있다.
+// linked[i][j] = '.': i번 스위치와 j번 시계가 연결되어 있지 않다.
+const char linked[SWITCHES][CLOCKS + 1] = {
+  "xxx.............",
+  "...x...x.x.x....",
+  "....x.....x...xx",
+  "x...xxxx........",
+  "......xxx.x.x...",
+  "x.x...........xx",
+  "...x..........xx",
+  "....xx.x......xx",
+  ".xxxxx..........",
+  "...xxx...x...x.."
+};
+// 모든 시계가 12시를 가리키고 있는지 확인한다.
+bool areAligend(const vector<int>& clocks);
+// swtch번 스위치를 누른다.
+void push(vector<int>& clocks, int swtch) {
+  for(int clock = 0; clock < CLOCKS; ++clock)
+    if(linked[swtch][clock] == 'x') {
+      clocks[clock] += 3;
+      if(clocks[clock] == 15) clocks[clock] = 3;
+    }
+}
+// clocks: 현재 시계들의 상태
+// swtch: 이번에 누를 스위치의 번호
+// 가 주어질 때, 남은 스위치들을 눌러서 clocks를 12시로 맞출 수 있는 최소 횟수를 반환한다.
+// 만약 불가능하다면 INF 이상의 큰 수를 반환한다.
+int solve(vector<int>& clocks, int swtch) {
+  if(swtch == SWITCHES) return areAligned(clocks) ? 0 : INF;
+  // 이 스위치를 0번 누르는 경우부터 세 번 누르는 경우까지를 모두 시도한다.
+  int ret = INF;
+  for(int cnt = 0; cnt < 4; ++cnt) {
+    ret = min(ret, cnt + slove(clocks, swtch + 1));
+    push(clocks, swtch);
+  }
+  // push(clocks, swtch)가 네 번 호출되었으니 clocks는 원래와 같은 상태가 된다.
+  return ret;
+}
+```
+* ### 내가 짠 코드와 비교해 보기
+#### &nbsp;아이디어는 똑같았다. 하지만 내가 짠 코드에서는 인자값으로 n번 버튼을 누를지 말지 결정하고 다음 n + 1번 버튼을 누를지 말지 결정하는 방식으로 해서 이러한 사이클을 4번 반복하는 식이였다. 하지만 4번 반복했는지를 검사하는 방법을 어떤 버튼이 4번 이상 눌렸는지 검사하는 경우라 이렇게 되면 버튼을 안누를 경우는 무한 재귀함수로 실행된다. 따라서 이 코드는 잘못 됐다. 책에서 나온 풀이가 가장 효율적인 방법중 하나인 것 같다.
+
+## 10. 많이 등장하는 완전 탐색 유형
+#### &nbsp;주어진 원소로 만들 수 있는 모든 순열 만들기, 주어진 원소 중 R개를 골라낼 수 있는 방법 만들기 등은 다른 문제의 부분 문제로도 빈번히 출제 된다.
+
+* ### 모든 순열 만들기
+#### &nbsp;서로 다른 N개의 원소를 일렬로 줄 세운 것을 순열(Permutation)이라고 부른다. 가능한 순열의 수는 N!이 되는데, N이 10을 넘어간다면 시간 안에 모든 순열을 생성하기 어려우므로 완전 탐색 말고 다른 방법을 생각해야 한다. STL에 포함된 next_permutation() 함수에서 모든 순열을 순서대로 생성하는 작업을 대신해 준다.
+
+* ### 모든 조합 만들기
+#### &nbsp;서로 다른 N개의 원소 중에서 R개를 순서 없이 골라낸 것을 조합(Combination)이라고 부른다.
+
+* ### 2^n가지 경우의 수 만들기
+#### n개의 질문에 대한 다빙 예/아니오 중의 하나라고 할 때 존재할 수 있는 답의 모든 조합의 수는 2^n가지다. 각 조합을 하나의 n비트 정수로 표현한다고 생각하면 재귀 호출을 사용할 것 없이 1차원 for문 하나로 이 조합들을 간단하게 모두 시도할 수 있다.
