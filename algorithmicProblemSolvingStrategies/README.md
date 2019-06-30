@@ -13,3 +13,4 @@ Algorithmic Problem Solving Strategies<br>
 ### 05. [알고리즘의 정당성 증명](https://github.com/KangJiJi/Study/tree/master/algorithmicProblemSolvingStrategies/chapter05)
 ### 06. [무식하게 풀기](https://github.com/KangJiJi/Study/tree/master/algorithmicProblemSolvingStrategies/chapter06)
 ### 07. [분할 정복](https://github.com/KangJiJi/Study/tree/master/algorithmicProblemSolvingStrategies/chapter07)
+### 08. [동적 계획법](https://github.com/KangJiJi/Study/tree/master/algorithmicProblemSolvingStrategies/chapter08)
