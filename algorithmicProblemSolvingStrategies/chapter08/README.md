@@ -425,4 +425,97 @@ int lis3(int start) {
 #### &nbsp;각 테스트 케이스마다 한 줄에, JLIS 의 길이를 출력합니다.
 
 * ### 개인적 풀이
+#### &nbsp;이 문제에서 조심해야 할 부분은 두개의 부분 수열에서 겹치는 숫자가 있는 경우다. 만약 a, b라는 최대 길이 부분 수열이 있는데 이 두개가 거의 혹은 완전 똑같다면, 합친 부분 수열은 최대의 길이가 아닌 수열이 될 것 이다. 첫번째로 가장 긴 합친 부분 수열을 만들 수 있는 알고리즘을 생각해 본다. 이때 최대 부분 수열을 구하는 함수와 다른 점은 배열이 두개라 모든 값들을 한번씩 맨 앞으로 배치해 봤을 때 메모이제이션 하는 것을 주의 하면 된다.
+```c++
+// 메모이제이션
+int cache[2][101], s[2][101];
+int length1, length2;
+
+int jlis(int choiceString, int start) {
+  // 기저 사례
+  if(string > 100) return 0;
+  int& ret = cache[choiceString][start + 1];
+  if(ret != -1) return ret;
+  
+  int index1, index2 = 0;
+
+  if(choiceString == 0) {
+    index1 = start;
+  } else {
+    index2 = start;
+  }
+
+  for(int i = index1; i < length1; i++) {
+    for(int j = index2; j < length2; j++) {
+      // 두번째 문자열에서 부분 수열 찾기
+      if(s[choiceString][i] < s[1][j]) {
+        ret = max(ret, jlis(1, j + 1) + 1);
+      }
+    }
+    // 첫번째 문자열에서 부분 수열 찾기
+    if(s[choiceString][i] < s[0][j]) {
+      ret = max(ret, jlis(0, i + 1) + 1);
+    }
+  }
+  
+  return ret;
+}
+```
+
+## 06. 풀이: 합친LIS
+
+* ### 탐욕법으로는 안 된다
+#### &nbsp;이 문제는 LIS 찾기 문제의 확장판이다. 두 수열의 LIS를 찾아서 합치는 것 만으로는 해결할 수 없다.
+
+* ### 비슷한 문제를 풀어 본 적이 있군요
+#### &nbsp;jlis(indexA, indexB) == A[indexA]와 B[indexB]에서 시작하는 합친 증가 부분 수열의 최대 길이라 한다.
+```c++
+// 입력이 32비트 부호 있는 정수의 모든 값을 가질 수 있으므로 인위적인 최소치는 64비트여야 한다.
+const long long NEGINF = numeric_limits<long long>::min();
+int n, m, A[100], B[100];
+int cache[101][101];
+// min(A[indexA], B[indexB]), max(A[indexA], B[indexB])로 시작하는 합친 증가 부분 수열의 최대 길이를 반환한다.
+// 단 indexA == indexB == -1 혹은 A[indexA] != B[indexB]라고 가정한다.
+int jlis(int indexA, int indexB) {
+  // 메모이제이션
+  int& ret = cache[indexA + 1][indexB + 1];
+  if(ret != -1) return ret;
+  // A[indexA], B[indexB]가 이미 존재하므로 2개는 항상 있다.
+  ret = 2;
+  long long a = (indexA == -1 ? NEGINF : A[indexA]);
+  long long b = (indexB == -1 ? NEGINF : B[indexB]);
+  long long maxElement = max(a, b);
+  // 다음 원소를 찾는다
+  for(int nextA = indexA + 1; nextA < n; ++nextA)
+    if(maxElement < A[nextA])
+      ret = max(ret, jlis(nextA, nextB) + 1);
+  for(int nextB = indexB + 1; nextB < m; ++nextB)
+    if(maxElement < B[nextB])
+      ret = max(ret, jlis(indexA, nextB) + 1);
+  return ret;
+}
+```
+
+* ### 내가 짠 코드와 비교해 보기
+#### &nbsp;생각은 비슷했지만 내가 짠 코드는 동작하지 않는다. 왜냐하면 첫번째 값만 고정시키고 나머지 원소들을 비교하려고 했기 때문이다. 이렇게 되면 크기 비교도 잘 작동하지 못한다.
+
+## 07. 문제: 원주율 외우기(문제 ID: PI, 난이도: 하)
+#### &nbsp;가끔 TV 에 보면 원주율을 몇만 자리까지 줄줄 외우는 신동들이 등장하곤 합니다. 이들이 이 수를 외우기 위해 사용하는 방법 중 하나로, 숫자를 몇 자리 이상 끊어 외우는 것이 있습니다. 이들은 숫자를 세 자리에서 다섯 자리까지로 끊어서 외우는데, 가능하면 55555 나 123 같이 외우기 쉬운 조각들이 많이 등장하는 방법을 택하곤 합니다. 이 때, 각 조각들의 난이도는 다음과 같이 정해집니다.
+#### 1. 모든 숫자가 같을 때 (예: 333, 5555) 난이도: 1
+#### 2. 숫자가 1씩 단조 증가하거나 단조 감소할 때 (예: 23456, 3210) 난이도: 2
+#### 3. 두 개의 숫자가 번갈아 가며 출현할 때 (예: 323, 54545) 난이도: 4
+#### 4. 숫자가 등차 수열을 이룰 때 (예: 147, 8642) 난이도: 5
+#### 5. 그 외의 경우 난이도: 10
+#### 원주율의 일부가 입력으로 주어질 때, 난이도의 합을 최소화하도록 숫자들을 3자리에서 5자리까지 끊어 읽고 싶습니다. 최소의 난이도를 계산하는 프로그램을 작성하세요.
+
+* ### 시간 및 메모리 제한
+#### &nbsp;프로그램은 1초 안에 실행되어야 하며, 64MB 이하의 메모리를 사용해야 한다.
+
+* ### 입력
+#### &nbsp;입력의 첫 줄에는 테스트 케이스의 수 C (<= 50) 가 주어집니다. 각 테스트 케이스는 8글자 이상 10000글자 이하의 숫자로 주어집니다.
+
+* ### 출력
+#### &nbsp;각 테스트 케이스마다 한 줄에 최소의 난이도를 출력합니다.
+
+* ### 개인적 풀이
 #### &nbsp;
