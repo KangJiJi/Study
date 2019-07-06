@@ -518,4 +518,169 @@ int jlis(int indexA, int indexB) {
 #### &nbsp;각 테스트 케이스마다 한 줄에 최소의 난이도를 출력합니다.
 
 * ### 개인적 풀이
-#### &nbsp;
+#### &nbsp;완전 탐색을 하기위해서 문자열 첫부분을 3자리, 4자리, 5자리, 끊어서 각각의 남은 문자열에 대해서 다시 3자리, 4자리, 5자리 씩 끊어서 확인을 해보면 될 것 같다. 다만 문자열 길이가 최대 10000까지 된다. 그래서 메모이제이션을 이용해 각각의 남은 배열에 대한 최소의 난이도를 계속 저장한다.
+```c++
+int cache[10000];
+int pi[10000];
+
+int checkLevel(int index, int checkLength) {
+  int check1 = 0;
+  for(int i = 0; i < checkLength - 1; i++) {
+    if(pi[index + i] == pi[index + i + 1]) check1++;
+  }
+  if(check1 == checkLength - 1) return 1;
+
+  int check2 = 0;
+  for(int i = 0; i < checkLength - 1; i++) {
+    if(pi[index + i] - pi[index + i + 1] == 1) check2++;
+    if(pi[index + i] - pi[index + i + 1] == -1) check2--;
+  }
+  if(check2 == (-1 * checkLength) + 1 || check2 == checkLength - 1) return 2;
+
+  int check3 = 0;
+  if(checkLength == 3) {
+    if(pi[index] == pi[index + 2]) check3++;
+  } else if(checkLength == 4) {
+    if(pi[index] == pi[index + 2] && pi[index + 1] == pi[index + 3]) check3++;
+  } else {
+    if(pi[index] == pi[index + 2] && pi[index] == pi[index + 3] && pi[index + 1] == pi[index + 3]) check3++;
+  }
+  if(check3 == 1) return 4;
+
+  int check4 = 0;
+  for(int i = 0; i < checkLength - 1; i++) {
+    if(pi[index + i] - pi[index + i + 1] == pi[index] - pi[index + 1]) check4++;
+  }
+  if(check4 == checkLength - 1) return 5;
+
+  return 10;
+}
+
+int minPiLevel(int index, int checkLength) {
+  if(index > 10000) return 10;
+  
+  int& ret = cache[index];
+  if(ret != -1) return ret;
+  
+  int level = checkLevel(index, checkLength);
+  ret += level;
+
+  for(int i = 0; i < 3; i++) {
+    ret = min(ret, minPiLevel(index + checkLenth, 3 + i));
+  }
+
+  return ret;
+}
+```
+
+## 08. 풀이: 원주율 외우기
+
+* ### 일만 자리나 외우라고?
+#### &nbsp;입력의 크기를 보면 어떤 방식이든지 완전 탐색으로 이 문제를 해결하기란 불가능하다는 것을 본능 적으로 알 수 있다. 길이가 7인 수열은 두 가지 방법으로 쪼갤 수 있는데 이런 수열이 n개 있으면 쪼갤 수 있는 방법의 수는 2^n개가 되는데, 길이가 10000인 수열에는 1,428개가 들어갈 수 있다.
+
+* ### 메모이제이션의 적용
+#### &nbsp;전체 문제의 최적해는 다음 세 경우 중 가장 작은 값이 된다.
+#### 01. 길이 3인 조각의 난이도 + 3글자 빼고 나머지 수열에 대한 최적해
+#### 02. 길이 4인 조각의 난이도 + 4글자 빼고 나머지 수열에 대한 최적해
+#### 03. 길이 5인 조각의 난이도 + 5글자 빼고 나머지 수열에 대한 최적해
+#### 나머지 수열의 최적해를 구할 때 앞의 부분을 어떤 식으로 쪼갰는지는 중요하지 않다.
+
+* ### 구현
+```c++
+string N;
+// N[a..b]구간의 난이도를 반환한다.
+int classify(int a, int b);
+int cache[10002];
+// 수열 N[begin..]를 외우는 방법 중 난이도의 최솟합을 출력한다.
+int memorize(int begin) {
+  // 기저 사례: 수열의 끝에 도달했을 경우
+  if(begin == N.size()) return 0;
+  // 메모이제이션
+  int& ret = cache[begin];
+  if(ret != -1) return ret;
+  ret = INF;
+  for(int L = 3; L <= 5; ++L)
+    if(begin + L <= N.size())
+      ret = min(ret, memorize(begin + L) + classify(begin, begin + L - 1));
+  return ret;
+}
+```
+
+* ### 내가 짠 코드와 비교해 보기
+#### &nbsp;index까지의 최솟값을 구해서 메모이제이션을 이용하는 방법은 똑같다. 다만 내가 짠 코드는 3글자에서 5글자를 변수 length 인자값으로 넘겨서 사용했고, ret을 -1로 초기화는 했지만 최솟값을 찾는 문제였기에 ret에 최대 값을 넣었어야 했다.
+
+## 09. 문제: Quantization(문제 ID: QUANTIZE, 난이도: 중)
+#### &nbsp;Quantization (양자화) 과정은, 더 넓은 범위를 갖는 값들을 작은 범위를 갖는 값들로 근사해 표현함으로써 자료를 손실 압축하는 과정을 말한다. 예를 들어 16비트 JPG 파일을 4컬러 GIF 파일로 변환하는 것은 RGB 색 공간의 색들을 4컬러 중의 하나로 양자화하는 것이고, 키가 161, 164, 170, 178 인 학생 넷을 '160대 둘, 170대 둘' 이라고 축약해 표현하는 것 또한 양자화라고 할 수 있다. 1000 이하의 자연수들로 구성된 수열을 최대 S종류 의 값만을 사용하도록 양자화하고 싶다. 이 때 양자화된 숫자는 원래 수열에 없는 숫자일 수도 있다. 양자화를 하는 방법은 여러 가지가 있다. 수열 1 2 3 4 5 6 7 8 9 10 을 2개의 숫자만을 써서 표현하려면, 3 3 3 3 3 7 7 7 7 7 과 같이 할 수도 있고, 1 1 1 1 1 10 10 10 10 10 으로 할 수도 있다. 우리는 이 중, 각 숫자별 오차 제곱의 합을 최소화하는 양자화 결과를 알고 싶다. 예를 들어, 수열 1 2 3 4 5 를 1 1 3 3 3 으로 양자화하면 오차 제곱의 합은 0+1+0+1+4=6 이 되고, 2 2 2 4 4 로 양자화하면 오차 제곱의 합은 1+0+1+0+1=3 이 된다. 수열과 S 가 주어질 때, 가능한 오차 제곱의 합의 최소값을 구하는 프로그램을 작성하시오.
+
+* ### 시간 및 메모리 제한
+#### &nbsp;프로그램은 2초 안에 실행되어야 하며, 64MB 이하의 메모리를 사용해야 한다.
+
+* ### 입력
+#### &nbsp;입력의 첫 줄에는 테스트 케이스의 수 C (1 <= C <= 50) 가 주어진다. 각 테스트 케이스의 첫 줄에는 수열의 길이 N (1 <= N <= 100), 사용할 숫자의 수 S (1 <= S <= 10) 이 주어진다. 그 다음 줄에 N개의 정수로 수열의 숫자들이 주어진다. 수열의 모든 수는 1000 이하의 자연수이다.
+
+* ### 출력
+#### &nbsp;각 테스트 케이스마다, 주어진 수열을 최대 S 개의 수로 양자화할 때 오차 제곱의 합의 최소값을 출력한다.
+
+* ### 개인적 풀이
+#### &nbsp;일단 완전 탐색법으로는 1 ~ 1000중 S개의 자연수를 골라서 배열 N을 S부분으로 나눠서 오차 제곱의 합을 구하고 최솟값을 찾아낸다.
+
+## 10. 풀이: Quantization
+
+* ### 하던 대로는 안 된다
+#### &nbsp;단순하게 생각해 보면 양자화된 결과 수열을 답으로 생각하고, 맨 앞의 숫자에서부터 하나씩 채워 나가는 접근 방법을 택하게 된다.
+#### quantize(A, U) = U가 지금까지 한 번 이상 사용한 숫자들의 집합일 때 A에 속한 수를 양자화해서 얻을 수 있는 최소 오차 제곱의 합.
+#### 하지만 이런 완전 탐색 코드는 너무 오래 걸려서 답을 구할 수 없다.
+
+* ### 답의 형태 제한하기
+#### &nbsp;답의 구조를 예측하고 그것을 강제한다. 주어진 수열을 정렬하면, 같은 숫자로 양자화되는 숫자들은 항상 인접해 있다. 따라서 이 문제는 이제 주어진 수열을 s개의 묶음으로 나누는 문제가 된다. 매 재귀 호출 때마다, 첫 묶음의 크기가 얼마일지를 결정하면 된다. from번째 이후 숫자들을 parts개의 묶음으로 묶을 때, 최소 오류 제곱 합을 반환하는 함수 quantize(from, parts)가 있다고 한다. 첫 번째 묶음의 크기가 size일 떄의 최소 오류는 minError(from, from + size + 1) + quantize(from + size, parts - 1)이 된다.
+
+* ### 한 개의 구간에 대한 답 찾기
+#### &nbsp;minError(a, b)에서 해야 하는 일은 크게 두 가지이다.
+#### 01. 주어진 구간을 어떤 수로 표현해야 할지 결정하기
+#### 02. 결정한 수 m으로 해당 구간을 표현했을 때 오차를 계산하기
+#### 모든 값의 평균을 사용하면 오차를 최소화할수 있다.
+
+* ### 구현
+```c++
+const int INF = 987654321;
+// A[]: 양자화해야 할 수열, 정렬한 상태
+// pSum[]: A[]의 부분합을 저장한다. pSum[i]는 A[0]^2..A[i]^2의 합
+// pSqSum[]: A[]제곱의 부분합을 저장한다. pSqSum[i]는 A[0]^2..A[i]^2의 합
+int n;
+int A[101], pSum[101], pSqSum[101];
+// A를 정렬하고 각 부분합을 계산한다.
+void precalc() {
+  sort(A, A + n);
+  pSum[0] = A[0];
+  pSqSum[0] = A[0] * A[0];
+  for(int i = 1; i < n; ++i) {
+    pSum[i] = pSum[i - 1] + A[i];
+    pSqSum[i] = pSqSum[i - 1] + A[i] * A[i];
+  }
+}
+// A[lo]..A[hi]구간을 하나의 숫자로 표현할 때 최소 오차 합을 계산한다.
+int minError(int lo, int hi) {
+  // 부분합을 이용해 A[lo] ~ A[hi]까지의 합을 구한다.
+  int sum = pSum[hi] - (lo == 0 ? 0 : pSum[lo - 1]);
+  int sqSum = pSqSum[hi] - (lo == 0 ? 0 : pSqSum[lo - 1]);
+  // 평균을 반올림한 값으로 이 수들을 표현한다.
+  int m = int(0.5 + (double)sum / (hi - lo + 1));
+  // sum(A[i] - m) ^ 2를 전개한 결과를 부분 합으로 표현
+  int ret = sqSum - 1 * m * sum + m * m * (hi - lo + 1);
+  return ret;
+}
+int cache[101][11];
+int quantize(int from, int parts) {
+  // 기저 사례: 모든 숫자를 다 양자화 했을 때
+  if(from == n) return 0;
+  // 기저 사례: 숫자는 아직 남았는데 더 묶을 수 없을 때 아주 큰 값을 반환한다.
+  if(parts == 0) return INF;
+  int& ret = cache[from][parts];
+  if(ret != -1) return ret;
+  ret = INF;
+  // 조각의 길이를 변환시켜 가며 최소치를 찾는다.
+  for(int partSize = 1; from + partSize <= n; ++partSize)
+    ret = min(ret, minError(from, from + partSize - 1) + quantize(from + partSize, parts - 1));
+  return ret;
+}
+```
