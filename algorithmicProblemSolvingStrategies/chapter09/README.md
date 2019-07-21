@@ -120,8 +120,118 @@ void reconstrct(int capacity, int item, vector<string>& picked) {
 #### &nbsp;모스 부호(Morse code)는 전화가 없던 시절 무선 전신에 주로 사용하던 코드로, 짧은 신호(단점, o)와 긴 신호(장점, -)를 섞어 글자를 표현하는 표현방식입니다. 예를 들어 알파벳 J는 모스 부호 o---로 표현되고, M은 --로 표현됩니다. n개의 장점과 m개의 단점으로 구성된 모든 신호들을 담고 있는 사전이 있다고 합시다. 예를 들어 n = m = 2라면 다음과 같은 신호들이 포함되어 있는 것이죠. 이 신호들은 사전순서대로 정렬되어 있습니다. -의 아스키 코드는 45이고, o의 아스키 코드는 111이기 때문에 -가 먼저 오게 되죠. n과 m이 주어질 때 이 사전의 k번째 신호를 출력하는 프로그램을 작성해 봅시다. 예를 들어 위 사전에서 네 번째 신호는 o--o입니다.
 
 * ### 개인적 풀이
-#### &nbsp;각 자리에는 -혹은 o가 올 수 있다. 따라서 메모이제이션을 이용하면서 -가 오는 경우와 o가 오는 경우를 순서대로 계산해보면 될 탐색이 가능할 것 같다. 인자로 각각의 남은 -과 o의 개수를 넘겨주면 될 것 같다.
+#### &nbsp;각 자리에는 -혹은 o가 올 수 있다. 인자로 각각의 남은 -과 o의 개수를 넘겨주면 될 것 같다.
 ```c++
 int cache[][];
+vector<char> mosString;
 
+int mos(int n, int m) {
+  if(n != 0) {
+    for(int numOfN = 0; numOfN < n; numOfN++) {
+      mosString.push_back("-");
+      mos(n - 1, m);
+      mosString.pop_back();
+    }
+  }
+
+  if(m != 0) {
+    for(int numOfM = 0; numOfM < m; numOfM++) {
+      mosString.push_back("o");
+      mos(n, m - 1);
+      mosString.pop_back();
+    }
+  }
+}
 ```
+
+* ### 모든 신호 만들기
+#### &nbsp;완전 탐색 알고리즘은 매우 만들기 쉽다.
+```c++
+// s: 지금까지 만든 신호
+// n: 더 필요한 -의 개수
+// m: 더 필요한 o의 개수
+void generate(int n, int m, string s) {
+  // 지거 사례: n = m = 0
+  if(n == 0 && m == 0) {
+    cout << s << endl;
+    return;
+  }
+  if(n > 0) generate(n - 1, m, s + "-");
+  if(m > 0) generate(n, m - 1, s + "o");
+}
+```
+
+* ### k - 1개 건너뛰기
+#### &nbsp;신호가 완성될 때마다 이 신호를 건너뛰어야 하는지, 출력해야 하는지 결정한다.
+```c++
+int skip;
+// skip개를 건너뛰고 출력한다.
+void generate2(int n, int m, string s) {
+  // 기저 사례: skip < 0;
+  if(skip < 0) return;
+  // 기저 사례: n = m = 0
+  if(n == 0 && m == 0) {
+    // 더 건너뛸 신호가 없는 겨우
+    if(skip == 0) cout << s << endl;
+    --skip;
+    return;
+  }
+  if(n > 0) generate2(n - 1, m, s + "-");
+  if(m > 0) generate2(n, m - 1, s + "o");
+}
+```
+#### 이떄 전역변수 skip은 k - 1로 초기화 된다.
+
+* ### 좀더 똑똑하게 건너뛰기
+#### &nbsp;k가 크다면 시간안에 답을 찾을 수 없다. generate2(n, m, s)가 호출되면 이들을 조합해서 만들 수 있는 신호의 수는 이항계수로 나타낼 수 있다. skip이 이항 계수보다 크면 실행할 필요 없이 넘겨버리면 된다.
+```c++
+const int M = 1000000000 + 100;
+int bino[201][201];
+// 필요한 모든 이항계수를 미리 계산해 둔다
+void calcBino() {
+  memset(bino, 0, sizeof(bino));
+  for(int i = 0; i <= 200; ++i) {
+    bino[i][0] = bino[1][1] = 1;
+    for(int j = 1; j < i; ++j)
+      bino[i][j] = min(M, bino[i - 1][j - 1] + bino[i - 1][j]);
+  }
+}
+// skip개를 건너뛰고 출력한다.
+void generate3(int n, int m, string s) {
+  // 기저 사례: skip < 0;
+  if(skip < 0) return;
+  // 기저 사례: n = m = 0
+  if(n == 0 && m == 0) {
+    // 더 건너뛸 신호가 없는 겨우
+    if(skip == 0) cout << s << endl;
+    --skip;
+    return;
+  }
+  if(bino[n + m][n] < skip) {
+    skip -= bino[n + m][n];
+    return;
+  }
+  if(n > 0) generate3(n - 1, m, s + "-");
+  if(m > 0) generate3(n, m - 1, s + "o");
+}
+```
+
+* ### 좀더 깔끔한 구현
+#### &nbsp;n개의 장점과 m개의 단점으로 구셩된 신호중 skip개를 건너뛰고 제일 먼저 오는 신호를 반환하는 함수 kth(n, m, skip)을 만들어 본다.
+```c++
+// n개의 -, m개의 o로 구성된 신호 중 skip개를 건너 뛰고 만들어지는 신호를 반환한다.
+string kth(int n, int m, int skip) {
+  // n == 0인 경우 나머지 부분은 전부 o일 수밖에 없다.
+  if(n == 0) return string(m, 'o');
+  if(skip < bino[n + m - 1][n - 1])
+    return "-" + kth(n - 1, m, skip);
+  return "o" + kth(n, m - 1, skip - bino[n + m - 1][n - 1]);
+}
+```
+
+* ### k번째 답 계산하기 레시피
+#### 1. 답들을 사전순서대로 만들며 경우의 수를 세는 완전 탐색 알고리즘을 설계하고, 메모이제이션을 적용해 경우의 수를 세는 동적 계획법 알고리즘으로 바꾼다.
+#### 2. 모든 답들을 사전순으로 생성하며 skip개를 건너뛰고 첫 번쨰 답을 반환하는 재귀 호출 함수를 구현한다.
+
+## 09. 문제: 드래곤 커브(문제 ID: DRAGON, 난이도: 중)
+#### &nbsp;
