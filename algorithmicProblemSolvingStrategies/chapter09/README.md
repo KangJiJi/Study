@@ -1,5 +1,5 @@
 9장 동적 계획법 테크닉
-================
+=====================
 ## 01. 최적화 문제의 실제 답 계산하기
 
 * ### 예제: 최대 증가 부분 수열 실제로 출력하기
@@ -234,4 +234,75 @@ string kth(int n, int m, int skip) {
 #### 2. 모든 답들을 사전순으로 생성하며 skip개를 건너뛰고 첫 번쨰 답을 반환하는 재귀 호출 함수를 구현한다.
 
 ## 09. 문제: 드래곤 커브(문제 ID: DRAGON, 난이도: 중)
-#### &nbsp;
+#### &nbsp;드래곤 커브(Dragon curve)는 간단한 수학 규칙으로 그릴 수 있는 그림으로, 위 그림같은 형태를 지닙니다. 드래곤 커브는 선분 하나에서 시작해서 간단한 규칙으로 이 선분을 변형해서 만들어지며, 변형이 한 번 이루어져 세대가 변할 때마다 더욱 복잡한 모양으로 진화합니다. 이 도형같이 일부를 확대했을 때 전체와 비슷한 형태로 구성된 도형들을 프랙탈(fractal) 이라고 하지요. 드래곤 커브를 그리는 방법을 드래곤 커브 문자열이라고 부릅시다. 드래곤 커브 문자열은 X, Y, F, +, -로 구성된 문자열인데, 우리는 한 점에서 시작해 다음과 같이 커브를 그리면 됩니다.
+#### F: 앞으로 한 칸 전진하며 선을 긋습니다.
+#### +: 왼쪽으로 90도 회전합니다. 
+#### -: 오른쪽으로 90도 회전합니다.
+#### X, Y: 무시합니다.
+#### 0세대 드래곤 커브를 그리는 문자열은 선분 하나인 FX 입니다. 그리고 그 이후의 다음 세대는 이전 세대 문자열의 각 글자를 다음과 같이 치환해서 만들어집니다.
+#### X => X+YF
+#### Y => FX-Y
+#### n세대 드래곤 커브 문자열을 구하고 싶습니다. 이 때 문자열 전체를 구하면 너무 기니, 문자열 중 p번째 글자부터 l글자만을 계산하는 프로그램을 작성하세요.
+
+* ### 시간 및 메모리 제한
+#### &nbsp;프로그램은 2초 안에 실행되어야 하며, 64MB 이하의 메모리를 사용해야 한다.
+
+* ### 입력
+#### &nbsp;입력의 첫 줄에는 테스트 케이스의 수 c (c <=50) 가 주어집니다. 각 테스트 케이스의 첫 줄에는 세 개의 정수로 드래곤 커브의 세대 n (0 <= n <= 50) , 그리고 p 와 l (1 <= p <= 1,000,000,000 , 1 <= l <= 50) 이 주어집니다. n세대의 드래곤 커브 문자열의 길이는 항상 p+l 이상이라고 가정해도 좋습니다.
+
+* ### 출력
+#### &nbsp;각 테스트케이스마다 한 줄에 n세대 드래곤 커브 문자열의 p번째 글자부터 l글자를 출력합니다.
+
+* ### 개인적 풀이
+#### &nbsp;X와 Y의 길이는 한세대 증가할 때 마다 1에서 4로 늘어난다. 따라서 n세대 증가 했을 때 길이는
+#### 2 + (이전 세대 길이) * 2
+#### 가 된다.
+
+## 10. 풀이: 드래곤 커브
+
+* ### 더 간단한 문제부터 풀어보자
+#### &nbsp;이 문제를 n세대 드래곤 커브의 p번째 글자를 찾는 것으로 바꿔본다.
+
+* ### p번째 글자를 찾는 함수 작성하기
+#### &nbsp;curve(seed, generations)는 초기 문자열 sedd를 generations세대 진화시킨 결과를 출력한다.
+
+* ### 계산 결과 길이 미리 계산하기
+#### &nbsp;재귀 호출할 때마다 이 재귀 호출이 몇 글자를 출력할지를 미리 알고 skip과 이 값을 비교할 수 있어야 한다. length(n)은 2 + 2 * length(n - 1)이다.
+
+* ### 구현하기
+```c++
+const int MAX = 1000000000 + 1;
+// length[i] = X나 Y를 i번 치환한 후의 길이
+int length[51];
+void precalc() {
+  length[0] = 1;
+  for(int i = 1; i <= 50; ++i)
+    length[i] = min(MAX, length[i - 1] * 2 + 2);
+}
+const string EXPAND_X = "X+YF";
+const string EXPAND_Y = "FX-Y";
+// dragonCurve를 generations 진화시킨 결과에서 skip번째 문자를 반환한다.
+char expand(const string& dragonCurve, int generations, int skip) {
+  // 기저 사례
+  if(generations == 0) {
+    assert(skip < dragonCurve.size());
+    return dragonCurve[skip];
+  }
+  for(int i = 0; i < dragonCurve.size(); ++i)
+    if(dragonCurve[i] == 'X' || dragonCurve[i] == 'Y') {
+      if(skip >= length[generations])
+        skip -= length[generations];
+      else if(dragonCurve[i] == 'X')
+        return expand(EXPAND_X, generations - 1, skip);
+      else
+        return expand(EXPAND_Y, generations - 1, skip);
+    }
+    // 확장되진 않지만 건너뛰어야 할 경우
+    else if(skip > 0)
+      --skip;
+    // 답을 찾은 경우
+    else
+      return dragonCurve[i];
+  return '#';
+}
+```
