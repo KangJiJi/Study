@@ -688,4 +688,61 @@ int sushi3() {
 #### &nbsp;각 테스트 케이스마다 한 줄로 태윤이가 좋아하는 M 개의 곡에 대해 각 곡이 재생되고 있을 확률을 출력합니다. 10^-7 이하의 절대/상대 오차가 있는 답은 정답으로 인정됩니다.
 
 * ### 개인적 풀이
-#### &nbsp;
+#### &nbsp;처음 예제 같은 경우는 태윤이는 3곡이 있으며 6분 30초 후에 좋아하는 노래 3곡이 재생되고 있을 확률을 구한다. 3곡의 재생 길이는 각각 4, 4, 2이고 행렬T에 따라서 좋아하는 3곡 0, 1, 2번 곡이 재생되고 있을 확률을 구하는 문제다. 또한 재생은 무조건 0번곡 부터 시작한다. calcSong(remainTime, song)는 reaminTime만큼의 시간이 남았을 때 song이 재생 될 확률을 반환한다. 점화식으로 표현하면
+#### calcSong(remainTime, currentSong, likeSong) = sigma(netxSongProbability * calcSong(remainTime - currentSongTime, currentSong, likeSong))
+
+## 25. 풀이: 지니어스
+
+* ### 비슷한 문제를 풀어 본 적이 있군요
+#### &nbsp;이 문제는 마르코프 연쇄를 다루는 문제다. 두니발 박사의 탈옥 그리고 광학 문자 인식이 마르코프 연쇄를 다루는 문제였다. start(time, song)을 재생을 시작한지 time분 후에 song번 노래가 재생을 시작할 확률이라고 정의한다. start(time, song) = sigma(start(time - L[prev], prev) * T[prev][song])와 같은 점화식이 성립한다.
+```c++
+int n, k, length[50];
+double T[50][50];
+vector<double> getProb1() {
+	// c[time][song] = time분 후에 song번 노래가 시작할 확률
+	double c[5][50];
+	memset(c, 0, sizeof(c));
+	c[0][0] = 1.0;
+	for(int time = 1; time < k; ++time)
+		for(int song = 0; song < n; ++song) {
+			double& prob = c[time % 5][song];
+			prob = 0;
+			for (int last = 0; last < n; ++last)
+				prob += c[(time - length[last] + 5) % 5][last] * T[last][song];
+		}
+
+	vector<double> ret(n);
+	//song번 노래가 재생되고 있을 확률을 계산한다.
+	for (int song = 0; song < n; ++song)
+		// song번 노래가 시작했을 시간을 모두 찾아 더한다.
+		for(int start = k - length[song] + 1; start <= k; ++start)
+			ret[song] += c[start % 5][song];
+	return ret;
+}
+```
+
+* ### 음악을 대체 얼마나 오래 듣는 거야
+#### &nbsp;위 코드의 시간 복잡도는 O(n^2 K)이다. 근데 k가 너무 크기 때문에 시간내로 수행하기에는 힘들다. 행렬 거듭제곱을 이요한 동적 게획법을 이용해야 한다.
+```c++
+// k분 30초 후에 각 곡이 재생되고 있을 확률을 반환한다
+vector<double> getProb2() {
+	SquareMatrix W(4 * n);
+	// 첫 3 * n개의 원소는 그대로 복사해온다
+	for(int i = 0; i < 3 * n; ++i) 
+		W[i][i + n] = 1.0;
+	// 마지막 n개의 원소는 이전 원소들의 선형 결합으로 이루어진다
+	for(int i = 0; i < n; ++i) 
+		// C[time+1][i] = C[time+1-length[j]][j] * T[j][i];
+		for(int j = 0; j < n; ++j) 
+			W[3 * n + i][(4 - length[j]) * n + j] = T[j][i];
+
+	SquareMatrix Wk = W.pow(k);
+	vector<double> ret(n);
+	// song번 노래가 재생되고 있을 확률을 계산한다
+	for(int song = 0; song < n; ++song) 
+		// song번 노래가 시작했을 시간을 모두 찾아 더한다
+		for(int start = 0; start < length[song]; ++start)
+			ret[song] += Wk[(3 - start) * n + song][3 * n];
+	return ret;
+}
+```
