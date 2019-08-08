@@ -16,3 +16,4 @@ Algorithmic Problem Solving Strategies<br>
 ### 08. [동적 계획법](https://github.com/KangJiJi/Study/tree/master/algorithmicProblemSolvingStrategies/chapter08)
 ### 09. [동적 계획법 테크닉](https://github.com/KangJiJi/Study/tree/master/algorithmicProblemSolvingStrategies/chapter09)
 ### 10. [탐욕법](https://github.com/KangJiJi/Study/tree/master/algorithmicProblemSolvingStrategies/chapter10)
+### 11. [조합 탐색](https://github.com/KangJiJi/Study/tree/master/algorithmicProblemSolvingStrategies/chapter11)
