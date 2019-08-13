@@ -46,5 +46,138 @@
 * ### 출력
 #### &nbsp;각 테스트 케이스마다 게임판에 놓을 수 있는 최대의 블록 수를 출력합니다.
 
+## 04. 풀이: 게임판 덮기2
+#### &nbsp;이 문제에서는 같은 상태를 여러 번 방문하는 것을 방지해 수행 속도를 빠르게 하는 효과가 있다.
+
+* ### 전처리
+#### &nbsp;블록의 형태가 미리 정해져 있지 않은 이 문제에서는 첫 번째 칸에 대한 상대 좌표의 목록으로 미리 저장하는게 불가능 하다. 따라서 입력받은 블록을 회전하고 각 칸의 상대 좌표를 계산하는 작업을 전처리 과정에서 수행해야 한다.
+```c++
+// 블록의 각 회전된 형태를 상대 좌표의 목록으로 저장해둔다.
+vector<vector<pair<int, int> > > rotations;
+// 블록의 크기
+int blockSize;
+// 2차원 배열 arr을 시계방향으로 90도 돌린 결과를 반환한다.
+vector<string> rotate(const vector<string>& arr){
+	vector<string> ret(arr[0].size(), string(arr.size(), ' '));
+	for(int i = 0; i < arr.size(); i++){
+		for(int j = 0; j < arr[0].size(); j++){
+			ret[j][arr.size() - i - 1] = arr[i][j];
+	return ret;
+}
+// block의 네가지 회전 형태를 만들고 이들의 상대 좌표의 목록으로 변환한다.
+void generateRotations(vector<string> block) {
+	rotations.clear();
+	rotations.resize(4);
+	for(int rot = 0; rot < 4; rot++){
+		int originY = -1; int originX = -1;
+		for(int i = 0; i < block.size(); i++)
+			for(int j = 0; j < block[i].size(); j++)
+				if(block[i][j] == '#'){
+					if(originY == -1){
+						// 가장 윗줄 맨 왼쪽에 있는 칸이 '원점'이 된다.
+						originY = i;
+						originX = j;
+					}
+					// 각 칸의 위치를 원점으로부터의 상대좌표로 표현한다.
+					rotations[rot].push_back(make_pair(i - originY, j - originX));
+				}
+			// 블록을 시계 방향으로 90도 회전한다.
+			block = rotate(block);
+		}
+	
+	// 네 가지 회전 형태 중 중복이 있을 경우 이를 제거한다.
+	sort(rotations.begin(), rotations.end());
+	rotations.erase(unique(rotations.begin(), rotations.end()), rotations.end());
+	// 블록이 몇 칸 짜리인지 저장해 둔다.
+	blockSize = rotations[0].size();
+}
+```
+
+* ### 완전 탐색
+#### &nbsp;모든 칸을 덮을 수 없는 경우가 있기 때문에 현재 칸을 항상 덮는 것이 아니라 빈 채로 남겨 두는 경우도 고려해야 한다. (y, x)를 덮지 않기로 결정한 경우에도 막아 둔다.
+```c++
+// 게임판의 정보
+int boardH, boardW;
+vector<string> board;
+// 게임판의 각 칸이 덮였는지를 나타낸다. 1이면 검은 칸이거나 이미 덮은 칸, 0이면 빈칸
+int covered[10][10];
+// 지금까지 찾은 최적해
+int best;
+// (y, x)를 왼쪽 위칸으로 해서 주어진 블록을 delta = 1이면 놓고, -1이면 없댄다. 블록을 놓을 때 이미 놓인 블록이나 검은 칸과 겹치면 거짓을, 아니면 참을 반환한다.
+bool set(int y, int x, const vector<pair<int,int> >& cells, int delta) {
+	bool ok = true;
+	for(int i = 0; i < cells.size(); i++) {
+		int cy = y + cells[i].first, cx = x + cells[i].second;
+		if(cy < 0 || cx < 0 || cy >= boardH || cx >= boardW)
+			ok = false;
+		else {
+			covered[cy][cx] += delta;
+			if(covered[cy][cx] > 1) ok = false;
+		}
+	}
+	return ok;
+}
+
+// placed : 지금까지 놓은 블록의 수
+void search(int placed){
+	// 아직 채우지 못한 빈 칸 중 가장 윗줄 왼쪽에 있는 칸을 찾는다.
+	int y = -1, x = -1;
+	for(int i = 0; i < boardH; i++){
+		for(int j = 0; j < boardW; j++)
+			if(covered[i][j] == 0){
+				y = i;
+				x = j;
+				break;
+			}
+		if(y != -1) break;
+	}
+
+	// 기저사례 : 게임판의 모든 칸을 처리한 경우
+	if(y == -1){
+		best = max(best, placed);
+		return;
+	}
+
+	// 이 칸을 덮는다.
+	for(int i = 0; i < rotations.size(); i++){
+		if(set(y, x, rotations[i], 1))
+			search(placed + 1);
+		set(y, x, rotations[i], -1);
+	}
+
+	// 이 칸을 덮지 않고 '막아'둔다.
+	covered[y][x] = 1;
+	search(placed);
+	covered[y][x] = 0;
+}
+
+int solve(){
+	best = 0;
+	// covered 배열을 초기화 한다.
+	for(int i = 0; i < boardH; i++){
+		for(int j = 0; j < boardW; j++){
+			covered[i][j] = (board[i][j] == '#' ? 1 : 0);
+		}
+	}
+	search(0);
+	return best;
+}
+```
+
+* ### 가지 치기
+#### &nbsp;가지 치기를 위해서는 현재 상태에서 최선을 다해도 최적해보다 많은 블록을 내려놓을 수 없다는 것을 알아야 한다. 우리가 놓을 수 있는 블록의 수는 단순히 남은 빈 칸의 수를 블록의 크기로 나눈 것이 된다. 이 값은 항상 우리가 실제 놓을 수 있는 블록의 수 이상이기 때문에, 우리가 얻을 수 있는 답의 상한이 된다. 이 답의 상한이 현재 찾은 최적해 이하라면 더이상 탐색을 수행할 필요가 없다.
+
+## 05. 문제: 알러지가 심한 친구들(문제 ID: ALLERGY, 난이도: 중)
+#### &nbsp;집들이에 n 명의 친구를 초대하려고 합니다. 할 줄 아는 m 가지의 음식 중 무엇을 대접해야 할까를 고민하는데, 친구들은 각각 알러지 때문에 못 먹는 음식들이 있어서 아무 음식이나 해서는 안 됩니다. 만들 줄 아는 음식의 목록과, 해당 음식을 못 먹는 친구들의 목록이 다음과 같은 형태로 주어진다고 합시다. 각 친구가 먹을 수 있는 음식이 최소한 하나씩은 있도록 하려면 최소 몇 가지의 음식을 해야 할까요? 위 경우라면 다 같이 먹을 수 있는 음식이 없기 때문에 결국 두 가지 이상 음식을 해야 합니다. 피자와 탕수육, 혹은 잡채와 닭강정처럼 두 개 이상의 음식을 선택해야만 모두가 음식을 먹을 수 있지요. 친구들의 정보가 주어질 때 최소한 만들어야 하는 요리의 가지수를 계산하는 프로그램을 작성하세요.
+
+* ### 시간 및 메모리 제한
+#### &nbsp;프로그램은 5초 안에 실행되어야 하며, 64MB 이하의 메모리를 사용해야 한다.
+
+* ### 입력
+#### &nbsp;입력의 첫 줄에는 테스트 케이스의 수 T (T <= 50 ) 가 주어집니다. 각 테스트 케이스의 첫 줄에는 친구의 수 n (1 <= n <= 50) 과 할 줄 아는 음식의 수 m (1 <= m <= 50) 이 주어집니다. 다음 줄에는 n 개의 문자열로 각 친구의 이름이 주어집니다. 친구의 이름은 10 자 이하의 알파벳 소문자로만 구성된 문자열입니다. 그 후 m 줄에 하나씩 각 음식에 대한 정보가 주어집니다. 각 음식에 대한 정보는 해당 음식을 먹을 수 있는 친구의 수와 각 친구의 이름으로 주어집니다. 모든 친구는 하나 이상의 음식을 먹을 수 있다고 가정해도 좋습니다.
+
+* ### 출력
+#### &nbsp;각 테스트 케이스마다 한 줄에 만들어야 할 최소의 음식 수를 출력합니다.
+
 * ### 개인적 풀이
 #### &nbsp;
