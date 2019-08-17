@@ -179,5 +179,51 @@ int solve(){
 * ### 출력
 #### &nbsp;각 테스트 케이스마다 한 줄에 만들어야 할 최소의 음식 수를 출력합니다.
 
-* ### 개인적 풀이
-#### &nbsp;
+## 06. 풀이: 알러지가 심한 친구들
+#### &nbsp;이 문제는 유명한 NP 완비 문제 중 하나다. 이 문제를 해결할 수 있는 가장 직관적인 방법은 음식을 선택하는 모든 경우의 수를 하나하나 만들어 보는 것이다. 
+
+* ### 너무 느리다
+#### &nbsp;이 방법은 너무 느리다. 그래서 여러 최적화 기법을 생각할 수 있다. 하지만 이 문제를 푸는 간단한 방법은 탐색의 형태를 바꾸는 것이다. 매 재귀 호출마다 아직 먹을 음식이 없는 친구를 하나 찾은 뒤 이 친구를 위해 어떤 음식을 만들지 결정하는 것이다.
+```c++
+int n, m;
+// canEat[i] : i번 친구가 먹을 수 있는 음식의 집합
+// eaters[i] : i번 음식을 먹을 수 있는 친구들의 집합
+vector<int> canEat[50], eaters[50];
+int best;
+
+// chosen : 지금까지 선택한 음식의 수
+// edible[i] : 지금까지 고른 음식 중 i번 친구가 먹을 수 있는 음식의 수
+void search(vector<int>& edible, int chosen){
+	// 간단한 가지치기
+	if(chosen >= best) return;
+
+	//아직 먹을 음식이 없는 첫 번째 친구를 찾는다.
+	int first = 0;
+
+	while(first < n && edible[first] > 0) first++;
+
+	// 모든 친구가 먹을 음식이 있는 경우 종료한다.
+	if(first == n){
+		best = chosen; 
+		return;
+	}
+
+	for(int i = 0; i < canEat[first].size(); i++){
+		int food = canEat[first][i];
+		for(int j = 0; j < eaters[food].size(); j++){
+			edible[eaters[food][j]]++;
+		}
+
+		search(edible, chosen + 1);
+		for(int j = 0; j < eaters[food].size(); j++){
+			edible[eaters[food][j]]++;
+		}
+	}
+}
+```
+
+* ### 왜 더 빠른가?
+#### &nbsp;search()는 항상 모든 친구가 먹을 음식이 있는 조합만을 찾아낸다. 또한 한 번 호출될 때마다 항상 음식을 하나 하게 되고, 음식을 하면 그 음식이 필요한 친구가 반드시 있다는 의미다.
+
+* ### 더 최적화 하기
+#### &nbsp;좀더 좋은 답을 초반에 찾아내서 가지치기를 더 잘할 수 있다.
