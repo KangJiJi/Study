@@ -7,4 +7,4 @@
 ## 5. [Project Mozzi front end](https://github.com/KangJiJi/Study/tree/master/javascriptProjectMozziFront)
 ## 6. [Clean Code](https://github.com/KangJiJi/Study/tree/master/cleanCode)
 ## 7. [Algorithmic problem solving strategies](https://github.com/KangJiJi/Study/tree/master/algorithmicProblemSolvingStrategies)
-## 8. GoF Desgin Patterns
+## 8. [GoF Design Patterns](https://github.com/KangJiJi/Study/tree/master/designPatterns)
