@@ -18,3 +18,4 @@ Algorithmic Problem Solving Strategies<br>
 ### 10. [탐욕법](https://github.com/KangJiJi/Study/tree/master/algorithmicProblemSolvingStrategies/chapter10)
 ### 11. [조합 탐색](https://github.com/KangJiJi/Study/tree/master/algorithmicProblemSolvingStrategies/chapter11)
 ### 12. [최적화 문제 결정 문제로 바꿔 풀기](https://github.com/KangJiJi/Study/tree/master/algorithmicProblemSolvingStrategies/chapter12)
+### 13. [수치 해석](https://github.com/KangJiJi/Study/tree/master/algorithmicProblemSolvingStrategies/chapter13)
