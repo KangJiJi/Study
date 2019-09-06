@@ -43,4 +43,48 @@ double bisection(double lo, double hi) {
 #### &nbsp;다변수 다항 방정식이랑 ax^2 + bx + c = 0 처럼 변수 하나만을 갖는 다항 방정식을 뜻한다. 5차 이상의 방정식은 아예 근의 공식이 없다. 어디까지나 이분법의 예제로만 받아들이고, 실제로는 수치 해석 알고리즘을 이용해야 한다. 다항식의 두 극점 사이에는 최대 하나의 근만이 있다. 따라서 극점들의 위치를 알아낼 수 있다면 그 사이에서 이분법을 이용해 근을 찾을 수 있을 것이다. 
 
 * ### 예제: 전세금 균등상환(문제 ID: LOAN, 난이도: 하)
+#### &nbsp;M개월 걸려 모든 대출 금액을 다 갚기 위해서는 한 달에 최소 얼마씩 갚아야 하는가.
+```c++
+// amount원을 연 이율 rates퍼센트로 duration월 간 한 달에 monthlyPayment로 남았을 때 대출 잔금은?
+double balance(double amount, int duration, double rates,
+	double monthlyPayment) {
+	double balance = amount;
+	for (int i = 0; i < duration; i++) {
+		//이자가 붙는다.
+		balance *= (1.0 + (rates / 12.0) / 100.0);
+		//상환액을 잔금에서 제한다.
+		balance -= monthlyPayment;
+	}
+	return balance;
+}
+// amount원을 연 이율 rates퍼센트로 duration월 간 갚으려면 한 달에 얼마씩 갚아야 하나?
+double payment(double amount, int duration, double rates) {
+	// 불변 조건:
+	//1. lo원씩 갚으면 duration개월 안에 갚을 수 없다.
+	//2. hi원씩 갚으면 duration개월 안에 갚을 수 있다.
+	double lo = 0, hi = amount * (1.0 + (rates / 12.0) / 100.0);
+	for (int iter = 0; iter < 100; iter++) {
+		double mid = (lo + hi) / 2.0;
+		if (balance(amount, duration, rates, mid) <= 0)
+			hi = mid;
+		else
+			lo = mid;
+	}
+	return hi;
+}
+```
+
+## 03. 문제: 승률 올리기 (문제ID: RATIO, 난이도: 하)
+#### &nbsp;마이티 카드 게임 프로그램에서는 각 플레이어의 게임 횟수 G와 승리 횟수 W, 그리고 승률 R을 표시해 줍니다. 이때 R은 승리 확률을 백분울로 표시하되, 정수부만 표시한다. 예를 들어 64.8648...%이면 64%로 표시된다. 도경이는 N게임을 해서 M게임을 승리했다. 이제 표시되는 승리 확률이 1%만 더 올라가면 칭호를 획득하게 된다. 칭호를 흭득하기 위해서는 최소 몇 게임을 해야 하는가?
+
+* ### 시간 및 메모리 제한
+#### &nbsp;프로그램은 10초 안에 실행되어야 하며, 64MB 이하의 메모리를 사용해야 한다.
+
+* ### 입력
+#### &nbsp;입력의 첫 줄에는 테스트 케이스의 수 C (<= 100) 가 주어집니다. 그 후 C줄에 하나씩 각 테스트 케이스로 N과 M(1 <= N <= 10^9, 0 <= M <= N)이 주어진다.
+
+* ### 출력
+#### &nbsp;각 테스트 케이스마다 도경이가 해야 할 최소 게임 수를 출력한다. 만약 20억 게임 내에 칭호를 획득할 수 없으면 -1을 출력한다.
+
+* ### 개인적 풀이
 #### &nbsp;
