@@ -1,5 +1,5 @@
 Knowledge(Pandora’s Box)
 =========================
 
-## 01. [javascriptDataStructure](https://github.com/KangJiJi/Study/tree/master/JS/Knowledge/JavascriptDataStructure)
-## 02. [javascriptProblemAndSolution](https://github.com/KangJiJi/Study/tree/master/JS/Knowledge/JavascriptProblemAndSolution)
+## 01. [Data Structure](https://github.com/KangJiJi/Study/tree/master/JS/Knowledge/DataStructure)
+## 02. [Problem And Solution](https://github.com/KangJiJi/Study/tree/master/JS/Knowledge/ProblemAndSolution)
