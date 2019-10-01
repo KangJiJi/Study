@@ -23,7 +23,7 @@ CHAPTER 1 타입
 
 > object를 제외한 이들을 '원시 타입(Primitives)'이라 한다.
 
-값 타입은 typeof 연산자로 알 수 있다.
+값 타입은 `typeof`연산자로 알 수 있다.
 ```javascript
 typeof undefined === "undefined"; // true
 typeof ture ==== "boolean"; // true
@@ -35,24 +35,24 @@ typeof Symbol() === "symbol"; // true
 typeof null === "object"; //true
 ```
 
-null에 대한 typeof 연산 결과는 버그 같이 보인다. 이 버그는 오래 됐기 때문에 이제 와서 고치게 되면 잘 돌아가던 웹 소프트웨어가 멈춰버릴 수 있다. 따라서 타입을 null 값을 정확하게 확인하려면 조건이 필요하다.
+`null`에 대한 `typeof`연산 결과는 버그 같이 보인다. 따라서 타입을 `null`값을 정확하게 확인하려면 조건이 필요하다.
 
 ```javascript
 var a = null;
 (!a && typeof a === "object"); // true
 ```
 
-null은 'falsy'한(false와 다름없는) 유일한 원시 값이지만, 타입은 'object'인 특별한 존재다.
+`null`은 'falsy'한(false와 다름없는) 유일한 원시 값이지만, 타입은 'object'인 특별한 존재다.
 
-typeof는 fucntion을 반환하기도 한다.
+`typeof`는 fucntion을 반환하기도 한다.
 
 ```javascript
 typeof function a() {} === "function"; // ture
 ```
 
-function은 object의 '하위 타입'이다. 함수는 '호출 가능한 객체' 라고 명시되어 있다.
+function은 `object`의 '하위 타입'이다. 함수는 '호출 가능한 객체' 라고 명시되어 있다.
 
-함수는 객체이기 때문에 유용한다. 다음과 같이 length 프로퍼티로 인자 개수를 알 수 있다.
+함수는 객체이기 때문에 유용한다. 다음과 같이 `length`프로퍼티로 인자 개수를 알 수 있다.
 
 ```javascript
 function a(b, c) {}
@@ -60,17 +60,17 @@ function a(b, c) {}
 a.length; // 2
 ```
 
-배열은 length 프로퍼티가 자동으로 관리되는 등의 추가 특성을 지닌, 객체의 '하위 타입'이다.
+배열은 `length`프로퍼티가 자동으로 관리되는 등의 추가 특성을 지닌, 객체의 '하위 타입'이다.
 
 ```javascript
 typeof [1, 2, 3] === "object"; // true
 ```
 
 ## 3. 값은 타입을 가진다.
-&nbsp;값은 타입이 있지만, 변수는 어떤 형태의 값이라도 가질 수 있다. 이는 자바스크립트는 '타입 강제(Type Enforcement)'를 하지 않기 때문이다. 변수에 typeof 연산을 하는 것은 "이 변수에 들어있는 값의 타입은 무었인가?" 라고 묻는 것이다.
+&nbsp;값은 타입이 있지만, 변수는 어떤 형태의 값이라도 가질 수 있다. 이는 자바스크립트는 '타입 강제(Type Enforcement)'를 하지 않기 때문이다. 변수에 `typeof`연산을 하는 것은 "이 변수에 들어있는 값의 타입은 무었인가?" 라고 묻는 것이다.
 
 ### 값이 없는 vs 선언되지 않은
-&nbsp;값이 없는 변수의 값은 undefined이며, typeof의 결과는 "undefined"다.
+&nbsp;값이 없는 변수의 값은 `undefined`이며, `typeof`의 결과는 `undefined`다.
 
 ```javascript
 var b = 42;
@@ -91,7 +91,7 @@ a; // undefined
 b; // Uncaught ReferenceError: b is not defined
 ```
 
-위 코드에서 b is not defined는 undefined와 다르며 a는 undefined이고, b는 undeclared이다.
+위 코드에서 `b is not defined`는 `undefined`와 다르며 a는 `undefined`이고, b는 `undeclared`이다.
 
 ```javascript
 var a;
@@ -100,14 +100,14 @@ typeof a; // "undefined"
 typeof b; // "undefined"
 ```
 
-typeof 연산결과는 undefined와 undeclared변수 모두 "undefined"로 나온다. 이는 typeof만의 독특한 안전 가드(safety guard)로 undeclared변수를 오류 처리 하지 않는다.
+`typeof`연산결과는 `undefined`와 `undeclared`변수 모두 `undefined`로 나온다. 이는 `typeof`만의 독특한 안전 가드(safety guard)로 `undeclared`변수를 오류 처리 하지 않는다.
 
 ### 선언되지 않은 변수
-&nbsp;여러 스크립트 파일의 변수들이 전역 네임스페이스(namespace)를 공유할 떄, typeof의 안전 가드는 의외로 쓸모 있다.
+&nbsp;여러 스크립트 파일의 변수들이 전역 네임스페이스(namespace)를 공유할 떄, `typeof`의 안전 가드는 의외로 쓸모 있다.
 
 > ES6부터는 모듈을 일급 개념으로 지원하기 떄문에 작성한 코드의 모든 변수가 전용(Private) 또는 별도의 네임스페이스에만 있을 수 있다.
 
-최상위 전역 스코프에 `var DEBUG = ture` 라고 'debug.js' 파일에 선언한다. 이때 typeof 안전 가드가 좋은 역할을 한다.
+최상위 전역 스코프에 `var DEBUG = ture` 라고 'debug.js' 파일에 선언한다. 이때 `typeof`안전 가드가 좋은 역할을 한다.
 
 ```javascript
 // 이렇게 하면 에러가 난다.
@@ -123,9 +123,9 @@ if(typeof DEBUG !== "undefined") console.log("Start Debug");
 if(typeof atob === "undefined") atob = function() {};
 ```
 
-> if문 블록에 var키워드로 선언하면 실행을 건너뛰더라도 최상위 스코프로 호이스팅(Hoisting)된다. 따라서 명시적으로 var를 뺴야 선언문이 호이스팅되지 않는다.
+> if문 블록에 `var`키워드로 선언하면 실행을 건너뛰더라도 최상위 스코프로 호이스팅(Hoisting)된다. 따라서 명시적으로 `var`를 뺴야 선언문이 호이스팅되지 않는다.
 
-typeof 안전 가드 없이 전역 변수 체크하는 방법은 전역 변수가 모두 전역 객체의 프로퍼티라는 점을 이용하는 것이다. 하지만 Node.js환경에서는 window객체로 전역 변수를 참조하지 않는다.
+`typeof`안전 가드 없이 전역 변수 체크하는 방법은 전역 변수가 모두 전역 객체의 프로퍼티라는 점을 이용하는 것이다. 하지만 Node.js환경에서는 `window`객체로 전역 변수를 참조하지 않는다.
 
 또한 가져다 쓰는 프로그램에 유틸리티의 특정 변수의 값을 검사해야 한다면 다음과 같이 할 수 있다.
 
@@ -141,8 +141,8 @@ function doSomethingCool() {
 
 ## 4. 정리하기
 
-* 자바스크립트에는 7가지 내장 타입이 있으며, typeof 연산자로 타입명을 알아낸다.
+* 자바스크립트에는 7가지 내장 타입이 있으며, `typeof`연산자로 타입명을 알아낸다.
 * 변수는 타입이 없지만 값은 타입이 있고, 타입은 값의 내재된 특성을 정의한다.
-* "undefined"와 "undeclared"는 다르다.
-* undeclared의 typeof 반환 값은 "undefined"다.
-* typeof 안전 가드 덕분에 선언되지 않는 변수에 사용하면 유용하다. 
+* `undefined`와 `undeclared`는 다르다.
+* `undeclared`의 `typeof`반환 값은 `undefined`다.
+* `typeof`안전 가드 덕분에 선언되지 않는 변수에 사용하면 유용하다. 
