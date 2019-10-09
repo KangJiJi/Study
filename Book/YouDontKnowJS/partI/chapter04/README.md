@@ -258,3 +258,217 @@ if(!~a.indexOf("ol")) {} // true
 ```
 
 #### 비트 잘라내기
+&nbsp;더블 틸드(`~~`) 연산자를 사용해 소수점 이상 부분을 잘나낼 수 있다. 하지만 `Math.floor()`와 같은 결과는 아니다. `~~`연산은 'ToInt32 강제변환'을 하는 연산이다.
+
+```javascript
+Math.floor(-49.6); // -50
+~~-49.6; // -49
+```
+
+### 명시적 강제변환: 숫자 형태의 문자열 파싱
+&nbsp;문자열로부터 숫자 값의 파싱은 비 숫자형 문자를 허용한다. 하지만 강제변환은 비 숫자형 문자는 `NaN`을 반환한다.
+
+```javascript
+var a = "42";
+var b = "42px";
+
+Number(a); // 42
+parseInt(a); // 42
+
+Number(b); // NaN (강제변환)
+parseInt(b); // 42 (파싱)
+```
+
+`parseInt()`는 문자열에만 사용해야 한다. 비 문자열 값이면 문자열로 강제변환한다. ES5이후 `parseInt()`는 두 번째 인자로 기수(radix, 진법 종류)를 지정하지 않으면 무조건 10진수로 반환을 한다.
+
+#### 비 문자열 파싱
+&nbsp; 다음과 같은 사례가 있다.
+
+```javascript
+parseInt(1/0, 19); // 18
+```
+
+일단 비 문자열을 첫 번째 인자로 넘긴 것이 잘못됐다. 하지만 비 문자열이 인자로 넘어오면 문자열로 강제변환을 한다. 따라서 위와 같은 경우는 `1/0`는 `Infinity`로 변환되며 첫 번째 문자인 "I"는 19진법 18에 해당하기 때문에 이러한 결과가 나왔다.
+
+```javascript
+var a = {
+  num: 21,
+  toString: function() {return String(this.num * 2);}
+};
+
+parseInt(a); // 42
+```
+
+비 문자열 값은 `toString()`메서드를 이용해 강제변환을 시도한다. 따라서 다음과 같은 결과들이 나온다.
+
+```javascript
+parseInt(0.000008); // 0 ("0.000008" -> "0")
+parseInt(0.0000008); // 8 ("8e-7" -> "8")
+parseInt(false, 16); // 250 ("false" -> "fa")
+parseInt(parseInt, 16); // 15 ("function..." -> "f")
+parseInt("0x10"); // 16 (16진수 "0x10" -> 16)
+parseInt("103", 2); // 2
+```
+
+### 명시적 강제변환: * -> 불리언
+&nbsp; '비 불리언(Non boolean)' -> '불리언' 강제변환은 `Boolean()`에 의해 실행된다. 일반적으로 불리언 값으로 명시적 강제변환을 할 때는 `!!`(Double negate)연산자를 사용한다.
+
+```javascript
+var a = "0";
+var b = [];
+var c = {};
+
+var d = "";
+var e = 0;
+var f = null;
+var g;
+
+!!a; // true
+!!b; // true
+!!c; // true
+
+!!d; // false
+!!e; // false
+!!f; // false
+!!g; // false
+```
+
+## 암시적 변환
+&nbsp;무조건 나쁜 것이 아니라 자바스크립트 개발자라면 알아야 한다.
+
+### '암시적'이란?
+&nbsp;암시적 변환은 코드 가독성을 높이고 세세한 구현부를 추상화하고 감추는 데 도움이 된다. 따라서 암시적 강제변환은 도움이 될 수 있다.
+
+### 암시적 강제변환: 문자열 <-> 숫자
+&nbsp;`+`연산자는 '숫자의 덧셈, 문자열 접합' 두 가지 목적으로 '오버로드' 된다.
+
+```javascript
+var a = "42";
+var b = "0";
+
+var c = 42;
+var d = 0;
+
+a + b; // "420"
+c + d; // 42
+```
+
+다음과 같은 코드도 문자열 접합 연산을 하게 된다.
+
+```javascript
+var a = [1, 2];
+var b = [3, 4];
+
+a + b; // "1,23,4"
+```
+
+`+`연산은 한쪽 피연산자가 문자열이거나 `ToNumber`추상 연산을 통해 문자열으로 나타낼 수 있으면 문자열 붙이기를 한다. 즉, 한쪽 피연산자가 문자열이면 문자열 붙이기 연산을 하고, 그 밖에는 언제나 숫자 덧셈을 한다. 다음과 같은 멋진 사례도 있다.
+
+```javascript
+var a = 42;
+var b = a + "";
+b; // "42"
+```
+
+만약 `valueOf()`, `toString()`메서드를 직접 구현하면 강제변환 과정에서 결과가 달라질 수 있으니 조심해야 한다.
+
+```javascript
+var a = "3.14";
+var b = a - 0;
+b; // 3.14
+```
+
+`-`연산자는 전부 숫자로 강제변환한다.
+
+### 암시적 강제변환: 불리언 -> 숫자
+&nbsp;특정 상황에서는 암시적 강제변환은 기발한 해법이 될 수 있다. 다음은 여러 인자를 받아 하나만 `true`인지 아닌지 검사하는 코드다.
+
+```javascript
+function onlyOne() {
+  var sum = 0;
+  for(var i = 0; i < arguments.length; i++) {
+    // falsy 값은 건너뛴다.
+    // 0으로 취급하는 셈이다. 그러나 NaN은 피해야 한다.
+    if(arguments[i]) {
+      sum += arguments[i];
+    }
+  }
+  return sum == 1;
+}
+
+var a = true;
+var b = false;
+
+onlyOne(b, a); // true
+onlyOne(b, a, b, b, b); // true
+```
+
+### 암시적 강제변환: * -> 불리언
+&nbsp;다음은 불리언으로의 암시적 강제변환이 일어나는 표현식이다.
+
+* if()문의 조건 표현식
+* for( ; ; ) 에서 두 번째 조건 표현식
+* while() 및 do while()루프의 조건 표현식
+* ? : 삼한 연산 시 첫 번째 조건 표현식
+* || 및 && 의 촤측 피연산자
+
+### &&와 || 연산자
+&nbsp;`&&`와 `||`의 결괏값은 두 피연산자 중 한쪽 값이다.
+
+```javascript
+var a = 42;
+var b = "abc";
+var c = null;
+
+a || b; // 42
+a && b; // "abc"
+
+c || b; // "abc"
+c && b; // null
+```
+
+피 연산자가 비 불리언 타입이면 ToBoolean로 강제변환 후 진행한다. 다음은 이 특성을 잘 활용한 코드다.
+
+```javascript
+function foo(a, b) {
+  a = a || "hello";
+  b = b || "world";
+
+  console.log(a + " " + b);
+}
+
+foo(); // "hello world"
+
+// 조심!
+foo("hi", ""); // "hi world"
+```
+
+자바스크립트 압축기는 `&&`를 다음과 같이 이용한다.
+
+```javascript
+function foo() {
+  console.log(a);
+}
+var a = 42;
+
+// 좋은법
+if(a) { foo(); }
+
+// JS압축기
+a && foo(); // 42
+```
+
+### 심벌의 강제변환
+&nbsp;'심벌 -> 문자열'명시적 강제변환은 허용되나 암시적 강제변환은 금지된다.
+
+```javascript
+var s = Symbol("Good");
+String(s); // "Symbol(Good)"
+s + ""; // TypeError
+```
+
+## 5. 느슨한/엄격한 동등 비교
+&nbsp;`==`(Loose Equals)와 `===`(Strict Equals)는 동등함의 판단 기준이 다르다. `==`는 동등함 비교 시 강제변환을 허용하지만, `===`는 강제변환을 허용하지 않는다.
+
+### 비교 성능
+&nbsp;
