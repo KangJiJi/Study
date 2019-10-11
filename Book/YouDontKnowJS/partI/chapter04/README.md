@@ -477,4 +477,193 @@ s + ""; // TypeError
 &nbsp;`==`연산자 로직은 '추상적 동등 비교 알고리즘'에 상술되어 있다. 같은 타입이라면 누구나 예상하듯이 동작한다. 하지만 -0, +0과 NaN과 같은 값은 예외다. `==`연산자에서의 객체 비교 알고리즘은 `===`의 알고리즘과 같다. 또한 `!=`연산자 연산 결과는 `==`연산자 연산 결과의 부정이다.
 
 #### 비교하기: 문자열 -> 숫자
-&nbsp;
+&nbsp;`==`연산자는 다음과 같다.
+
+```javascript
+var a = 42;
+var b = "42";
+
+a === b; // false
+a == b; // true
+```
+
+ES5에는 다음과 같이 나와있다.
+
+* Type(x)가 Number 고 Type(y)가 String 이면, `x == ToNumber(y)`를 비교한다.
+* Type(x)가 String 이고 Type(y)가 Number 면, `ToNumber(x) == y`를 비교한다.
+
+#### 비교하기: * -> 불리언
+&nbsp;`==`연산자로 불리언 값을 비교할때는 주의 해야 한다.
+
+```javascript
+var a = "42";
+var b = true;
+
+a == b; // false
+```
+
+"42"는 `truthy`한 값이지만 ES5에는 다음과 같이 나와있다.
+
+* Type(x)이 불리언이면 `ToNumber(x) == y` 비교한다.
+* Type(y)이 불리언이면 `x == ToNumber(y)` 비교한다.
+
+따라서 `"42" == true`는 `"42" == 1`로 강제변환된다. 또한 재귀적으로 문자열 숫자 비교를 진행하기 때문에 결과적으로 `false`값이 나오게 된다. 결과적으로 `==`의 한쪽 피연산자가 불리언 값이면 예외 없이 불리언 값을 숫자로 강제변환 시킨다. 따라서 `== true`, `== false`와 같은 코드는 사용하지 않는게 좋다. `===`연산자를 사용하거나 `!!`연산으로 명시적 강제변환을 이용해 코드를 짜도록 해야한다.
+
+#### 비교하기: null -> undefined
+&nbsp;ES5에는 다음과 같이 나와있다.
+
+* x가 `null`이고 y가 `undefined`이면 `true`를 반환한다.
+* x가 `undefined`이고 y가 `null`이면 `true`를 반환한다.
+
+`null`과 `undefined`의 `==`연산자 연산 결과는 언제나 `true`다. 이러한 특성을 이용해 다음과 같은 코드를 이용할 수 있다.
+
+```javascript
+var a = doSomething();
+
+if(a == null) {
+  // doSomething() 이 null 혹은 undefined를 반환할 경우만 실행된다.
+  // 이외의 값은 모두다 false다.
+}
+```
+
+`a == null`같은 코드는 가독성 좋고 안전한 암시적 강제변환의 좋은 일례다.
+
+#### 비교하기: 객체 -> 비객체
+&nbsp;ES5에는 다음과 같이 나와있다.
+
+* Type(x)가 String또는 Number고 Type(y)가 Object라면, `x == ToPrimitive(y)`를 비교한다.
+* Type(x)가 Object고 Type(y)가 String또는 Number라면, `ToPrimitive(x) == y`를 비교한다.
+
+```javascript
+var a = 42;
+var b = [ 42 ];
+
+a == b; // true
+```
+
+`[ 42 ]`의 `ToPrimitive` 추상 연산 결과는 "42"가 되기 때문에 `"42" == 42`비교를 진행한다. 다음과 같은 사례도 있다.
+
+```javascript
+var a = null;
+var b = Object(a); // 'Object()'와 같다
+a == b; // false
+
+var c = undefined;
+var d = Object(c); // 'Object()'와 같다.
+c == d; // false
+
+var e = NaN;
+var f = Object(e); // 'new Number(e)'와 같다.
+e == f; // false
+```
+
+`null`과 `undefined`는 객체 래퍼가 없어서 박싱할 수 없기 떄문에 일반 객체가 만들어진다. `NaN`은 `Number`로 박싱되지만 `NaN == NaN`는 `false`이기 때문에 `false`이다.
+
+### 희귀 사례
+&nbsp;다음은 사용하지 말아야할 희귀 사례(Corner Cases)들 이다.
+
+#### 알 박힌 숫자 값
+
+```javascript
+Number.prototype.valueOf = function() {
+  return 3;
+};
+
+new Number(2) == 3; // true
+```
+
+위와 같은 코드는 절대로 짜면 안된다. 또한 다음과 같은 말도 안되는 코드를 짜는 것도 가능하다.
+
+```javascript
+var i = 2;
+Number.prototype.valueOf = function() {
+  return i++;
+};
+
+var a = new Number(42);
+
+if(a == 2 && a == 3) {
+  // true
+  console.log("절대 이런 코드는 만들면 안된다.");
+}
+```
+
+#### Falsy 비교
+&nbsp;다음은 조심해야 할 7개의 긍정 오류(False Positive)다.
+
+```javascript
+"0" == false; // true
+false == 0; // true
+false == ""; // true
+false == []; // true
+"" == 0; // true
+"" == []; // true
+0 == []; // true
+```
+
+#### 말도 안 되는...
+&nbsp;더 심각한 사례들이 있다.
+
+```javascript
+[] == ![]; // true
+2 == [2]; // true
+"" == [null]; // true
+```
+
+`[] == ![]`는 `[] == false`로 변환된다. 또한 `[2].toString()`은 `"2"`를 반환하고 `[null].toString()`은 `""`를 반환한다. 우리가 맞닥뜨릴 가능성이 있는 경우는 위 7가지 경우가 대부분이다. 따라서 잘 주의해가면서 사용해야 한다.
+
+#### 근본부터 따져보자
+&nbsp;앞에 나온 7가지 경우 빼고는 대부분 이치에 맞고 설명이 가능하다. 또한 7가지 이상한 비교는 사용하면 안되는 코드에 속해있기도 한다.
+
+#### 암시적 강제변환의 안전한 사용법
+&nbsp;사고를 미연에 방지하기 위해 몇 가지 원칙을 제시한다.
+
+* 피연산자 중 하나가 `true`, `false`일 가능성이 있으면 '절대로' `==`연산자를 사용하면 안된다.
+* 피연산자 중 하나가 `[]`, `""`, `0`이 될 가능성이 있으면 가급적 `==`연산자는 쓰지 말자.
+
+## 6. 추상 관계 비교
+&nbsp;`a < b` 비교 과정에서 어떤 일들이 벌어지는지 잘 알아야 한다. '추상적 관계 비교(Abstract Relational Comparison)'알고리즘은 피연산자가 모두 문자열일 때와 그 외의 경우, 두 가지로 나눌 수 있다.
+
+먼저 두 피연산자에 대해 `ToPrimitive` 강제변환을 실시한다. 두 피연산자가 문자열이 아니라면 양쪽 모두 `ToNumber`로 강제변환하여 비교한다.
+
+하지만 모두 문자열이면, 각 문자를 단순 어휘(알파벳 순서) 비교한다.
+
+```javascript
+var a = [42];
+var b = ["43"];
+
+a < b; // true
+a > b; // false
+
+var c = ["42"];
+var d = ["043"];
+
+a < b; // false
+```
+
+다음과 같이 객체도 비교가 가능하다.
+
+```javascript
+var a = {b: 42};
+var b = {b: 43};
+
+a < b; // false
+a == b; // false (정확히 같은 값에 대한 레퍼런스일 경우만 true)
+a > b; // false
+
+a <= b; // true
+a >= b; // true
+```
+
+a와 b는 `"[object Object]"`로 변환된다. 또한 `a <= b`의 결과는 `b < a`결과의 부정이기 때문에 `true`가 나올 수 있다. 따라서 다음과 같이 명시적 강제변환을 이용하는 것도 좋다.
+
+```javascript
+var a = [42];
+var b = "043";
+
+a < b; // false -- 문자열 비교
+Number(a) < Number(b); // true -- 숫자 비교
+```
+
+## 7. 정리하기
+&nbsp;강제변환은 꽤 유용한 기능이다. 특히 암시적 강제변환은 코드의 가독성을 높이는 장점이 있다. 물론 잘 알고 사용해야 혼동의 여지가 없다.
