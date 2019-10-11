@@ -20,3 +20,4 @@ Algorithmic Problem Solving Strategies<br>
 ### 12. [최적화 문제 결정 문제로 바꿔 풀기](https://github.com/KangJiJi/Study/tree/master/Book/AlgorithmicProblemSolvingStrategies/chapter12)
 ### 13. [수치 해석](https://github.com/KangJiJi/Study/tree/master/Book/AlgorithmicProblemSolvingStrategies/chapter13)
 ### 14. [정수론](https://github.com/KangJiJi/Study/tree/master/Book/AlgorithmicProblemSolvingStrategies/chapter14)
+### 15. [계산 기하](https://github.com/KangJiJi/Study/tree/master/Book/AlgorithmicProblemSolvingStrategies/chapter15)
