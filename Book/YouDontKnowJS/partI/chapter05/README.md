@@ -240,4 +240,216 @@ if(a) {
 ```
 
 ## 2. 연산자 우선순위
-&nbsp;
+&nbsp;표현식에 연산자가 여러 개 있을 경우 처리 되는 규칙을 '연산자 우선순위(Operator precedence)'라고 한다.
+
+```javascript
+var a = 42, b;
+b = a++, a;
+a; // 43
+b; // 42
+```
+
+`b = a++, a`를 엔진은 연산자 우선순위에 의해서 `(b = a++), a`로 해석하게 된다. 또한 `&&`는 `||`보다 먼저 평가된다.
+
+### 단락 평가
+&nbsp;`&&`와 `||`연산자는 '단락 평가(Short circuiting)'특성을 가지고 있다. 이 특성을 다음과 같이 사용한다.
+
+```javascript
+function doSomething(opts) {
+  // 만약 opts 값이 false면 opts.cool을 실행하지 않고 넘어간다.
+  if(opts && opts.cool) {
+    // ...
+  }
+}
+```
+
+### 끈끈한 우정
+&nbsp;`? :`(삼항 연산자)는 `||`보다 우선순위가 낮다.
+
+### 결합성
+&nbsp;연산자는 좌측부터 그룹핑(Grouping)이 일어나면 좌측 결합성(Left-Associative) 또는 우츨부터 그룹핑이 일어나며 우측 결합성(Right-Associative)를 가진다고 한다. `a && b && c`같은 표현식에서는 암시적인 그룹핑이 발생한다. `a && b && c`는 `(a && b) && c`와 같다. 또한 결합 방향에 따라서 완전히 다르게 작동하는 연산자도 있다.
+
+```javascript
+// 삼항 연산자는 우측 결합성 연산자다.
+a ? b : c ? d : e;
+// 다음과 같이 결합된다.
+a ? b : (c ? d : e);
+```
+
+이떄 삼항 연산자는 조심해야 한다. 예를 들면 `=`와 같이 사용할 때 조심해야 한다.
+
+```javascript
+var a = 42;
+var b = "foo";
+var c = false;
+
+var d = a && b || c ? c || b ? a : c && b : a;
+// 이와 같이 결합된다
+// ((a && b) || c) ? ((c || b) ? a : (c && b)) : a
+d; // 42
+```
+
+### 분명히 하자
+&nbsp;연산자 우선순위/결합성을 적절하게 사용해서 혼동을 줄이고 `()`로 예쁘게 감싸 주면 된다.
+
+## 3. 세미콜론 자동 삽입
+&nbsp;ASI(Automatic Semicolon Insertion)는 자바스크립트 프로그램의 누락된 세미콜론을 자동으로 삽입해 주는 것이다. 세미콜론을 안 써도 프로그램이 실행되는 이유는 ASI 덕분이다. ASI는 행 바꿈에만 적용되며 중간에 삽입되는 경우는 없다. 다음과 같은 코드도 잘 작동 한다.
+
+```javascript
+var a = 42, b
+c;
+```
+
+또한 `return`문 끝에도 세미콜론을 자동으로 삽입해 준다.
+
+### 에러 정정
+&nbsp;ASI가 있더라도 '필요하다고' 생각되는 곳이라면 어디든 세미콜론을 직접 넣어줘야 한다.
+
+## 4. 에러
+&nbsp;자바스크립트 일부 에러는 컴파일 시점에 발생하도록 문법적으로 정의되어 있다. 다음과 같은 에러들이 있다.
+
+```javascript
+var a = /+foo/; // Error
+42 = a; // Error
+function bar(a, b, a) { "use strict"; } // Error
+(function() {
+  "use strict"
+  var a = {
+    b: 42,
+    b: 43
+  }; // Error
+})();
+```
+
+### 너무 이른 변수 사용
+&nbsp;ES6에는 '임시 데드 존(TDZ, Temporal Dead Zone)'이라는 새로운 개념을 도입했다. TDZ는 아직 초기화를 하지 않아 변수를 참조할 수 없는 코드 영역이다.
+
+```javascript
+{
+  a = 2; // ReferenceError: Cannot access 'a' before initialization
+  let a;
+  // var는 오류 없이 작동한다
+}
+```
+
+또한 `typeof`연산자는 선언되지 않은 변수에 대해서는 `undefined`를 반환하지만 TDZ참조시 에러가 난다.
+
+```javascript
+{
+  typeof a; // undefined
+  typeof b; // ReferenceError
+  let b;
+}
+```
+
+## 5. 함수 인자
+&nbsp;ES6 디폴트 인자 값에서도 TDZ관련 에러가 있다.
+
+```javascript
+var b = 3;
+function foo(a = 42, b = a + b + 5) {
+  // ...
+}
+foo(); // ReferenceError: b is not defined
+```
+
+두번째 할당문에서 좌변 b는 TDZ에 남아있는 b를 참조하려고 하기 때문에 에러가 난다. 또한 디폴트 인자를 사용해도 `arguments`배열에 원소가 추가되지는 않는다. 직접 함수 호출 시 인자 값을 넣어줘야 배열의 원소가 추가된다.
+
+```javascript
+function foo(a) {
+  a = 42;
+  console.log(arguments[0]);
+}
+foo(2); // 42
+foo(); // undefined
+
+function bar(a) {
+  "use strict"
+  a = 42;
+  console.log(arguments[0]);
+}
+bar(2); // 2
+bar(); // undefined
+```
+
+위와 같은 사례는 바람직 하지 않다. 이는 엔진 내부의 상세를 노출시킨, 구멍 난 추상화(Leaky Abstraction)이다. ES6 부터는 Rest인자를 권장한다.
+
+## 6. try...finally
+&nbsp;`try...catch`블록에서 `try`이후에는 `catch`, `finally` 중 하나만 필수다. 어떤 의미에서 `finally`절은 콜백 함수와 같다. 하지만 `try`절에 `return`문이 있으면 `finally`절 이후에 반환받은 호출부 코드가 실행된다.
+
+```javascript
+function foo() {
+  try {
+    return 42;
+  } finally {
+    console.log("Hello");
+  }
+
+  console.log("실행 안됨");
+}
+console.log(foo());
+// Hello
+// 42
+```
+
+`try` 안에 `throw`가 있어도 비슷하게 동작한다. 하지만 `finally`절에서 예외가 던져지면, 이전의 실행 결과는 모두 무시한다.
+
+```javascript
+function foo() {
+  try {
+    return 42;
+  } finally {
+    throw "Hello";
+  }
+
+  console.log("실행 안됨");
+}
+console.log(foo());
+// Uncaught Exception: Hello
+```
+
+`continue`나 `break`같은 제어문 역시 비슷하게 동작한다.
+
+`finally`절의 `return`은 그 이전에 실행된 `try`나 `catch`절의 `return`을 덮어쓰는 능력이 있다.
+
+## 7. switch
+&nbsp;`switch`표현식과 `case`표현식 간의 매치 과정은 `===`알고리즘과 똑같다. `==`연산을 하고 싶으면 다음과 같이 할 수 있다.
+
+```javascript
+var a = "42";
+
+switch(true) {
+  case a == 10:
+    console.log("10 또는 '10'");
+    break;
+  case a == 42:
+    console.log("42 또는 '42'");
+    break;
+  default:
+}
+
+// 42 또는 '42'
+```
+
+하지만 `==`를 써도 엄격히 `true`값이 아닌 즉, `thruthy`값은 매치에 실패한다. 끝으로 `default`절은 선택 사항이며 다음과 같이 사용할 수도 있다.
+
+```javascript
+var a = 10;
+switch(a) {
+  case 1:
+  case 2:
+    // never gets here
+  default:
+    console.log("default");
+  case 3:
+    console.log("3");
+  break;
+  case 4:
+    console.log("4");
+}
+// default
+// 3
+```
+
+## 8. 정리하기
+&nbsp;자바스크립트 문법에는 오묘한 것들이 많다. 따라서 앞에 배운 내용들을 잘 사용할 수 있어야 한다.
