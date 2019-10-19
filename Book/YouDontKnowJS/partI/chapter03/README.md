@@ -215,7 +215,7 @@ Object.getOwnPropertySymbols(a); // [ Symbol(my own symbol) ]
 function isThisCool(vals, fn, rx) {
   vals  = vals || Array.prototype; // Array.prototype은 빈 배열
   fn = fn || Function.prototype; // Function.prototype은 빈 함수
-  rx = rx || Function.prototype; // RegExp.prototype은 빈 정규식
+  rx = rx || RegExp.prototype; // RegExp.prototype은 빈 정규식
 
   return rx.test(vals.map(fn).join(""));
 }
