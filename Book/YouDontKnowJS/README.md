@@ -13,6 +13,8 @@ You don't know js 정리<br>
 
 ## Part II
 
+### 01. [스코프란 무엇인가](https://github.com/KangJiJi/Study/tree/master/Book/YouDontKnowJS/partII/chapter01)
+
 ## Part III
 
 ## Part IV
