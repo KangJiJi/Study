@@ -17,6 +17,7 @@ You don't know js 정리<br>
 ### 02. [렉시컬 스코프](https://github.com/KangJiJi/Study/tree/master/Book/YouDontKnowJS/partII/chapter02)
 ### 03. [함수 VS 블록 스코프](https://github.com/KangJiJi/Study/tree/master/Book/YouDontKnowJS/partII/chapter03)
 ### 04. [호이스팅](https://github.com/KangJiJi/Study/tree/master/Book/YouDontKnowJS/partII/chapter04)
+### 05. [스코프 클로저](https://github.com/KangJiJi/Study/tree/master/Book/YouDontKnowJS/partII/chapter05)
 
 ## Part III
 
