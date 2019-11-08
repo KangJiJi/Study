@@ -19,6 +19,12 @@ You don't know js 정리<br>
 ### 04. [호이스팅](https://github.com/KangJiJi/Study/tree/master/Book/YouDontKnowJS/partII/chapter04)
 ### 05. [스코프 클로저](https://github.com/KangJiJi/Study/tree/master/Book/YouDontKnowJS/partII/chapter05)
 
+## 부록
+
+### 01. [부록 A](https://github.com/KangJiJi/Study/tree/master/Book/YouDontKnowJS/appendixI/appendixA)
+### 02. [부록 B](https://github.com/KangJiJi/Study/tree/master/Book/YouDontKnowJS/appendixI/appendixB)
+
+
 ## Part III
 
 ## Part IV
