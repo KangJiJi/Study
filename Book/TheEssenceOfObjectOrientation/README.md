@@ -12,3 +12,4 @@ The Essence Of Object-Orientation<br>
 ### 04. [역할, 책임, 협력](https://github.com/KangJiJi/Study/tree/master/Book/TheEssenceOfObjectOrientation/chapter04)
 ### 05. [책임과 메시지](https://github.com/KangJiJi/Study/tree/master/Book/TheEssenceOfObjectOrientation/chapter05)
 ### 06. [객체 지도](https://github.com/KangJiJi/Study/tree/master/Book/TheEssenceOfObjectOrientation/chapter06)
+### 07. [함께 모으기](https://github.com/KangJiJi/Study/tree/master/Book/TheEssenceOfObjectOrientation/chapter07)
