@@ -5,7 +5,7 @@ Abstract Factory(추상 팩토리)
 &nbsp;상세화된 서브클래스를 정의하지 않고도 서로 관련성이 있거나 독립적인 여러 객체의 군을 생성하기 위한 인터페이스를 제공합니다.
 
 ## 동기
-&nbsp;서로 다른 룩앤필(체험, 겉모양, 인터페이스 등등) 표준에 상관없이 프로그램을 확장 혹은 이식할 수 있어야 한다. 사용자가 펙토리에게만 메시지를 보내고 내부 적으로는 어떤 객체에게 메시지를 보내는지 알 필요가 없도록 구현하면 룩앤필과 분리될 수 있다.
+&nbsp;서로 다른 룩앤필(체험, 겉모양, 인터페이스 등등) 표준에 상관없이 프로그램을 확장 혹은 이식할 수 있어야 한다. 사용자가 팩토리에게만 메시지를 보내고 내부 적으로는 어떤 객체에게 메시지를 보내는지 알 필요가 없도록 구현하면 룩앤필과 분리될 수 있다.
 
 ## 활용성
 * 객체가 생성되거나 구성, 표현되는 방식과 무관하게 시스템을 독립적으로 만들고자 할 때.
@@ -37,3 +37,58 @@ Abstract Factory(추상 팩토리)
 * 제품을 생성한다.
 * 확장 가능한 팩토리들을 정의한다.
 
+## 예제 코드
+&nbsp;미로 생성 문제에 추상 팩토리 패턴을 적용해 본다.
+
+다음은 기본적인 미로 팩토리다.
+
+```javascript
+const mazeFactory = () => {
+  const makeMaze = () => return maze();
+  const makeWall = () => return wall();
+  const makeRoom = () => return room();
+  const makeDoor = (room1, room2) => return door(room1, room2);
+};
+```
+
+다음은 `mazeFactory`를 매개변수로 받아 언제든지 모양은 같지만 다른 성질을 가진 미로를 만들 수 있는 추상 팩토리다.
+
+```javascript
+const mazeGame = (mazeFactory) => {
+  const aMaze = mazeFactory.makeMaze();
+  const room1 = mazeFactory.makeRoom();
+  const room2 = mazeFactory.makeRoom();
+  const aDoor = mazeFactory.makeDoor(room1, room2);
+
+  aMaze.addRoom(room1);
+  aMaze.addRoom(room2);
+
+  room1.setSide(North, mazeFactory.makeWall());
+  room1.setSide(East, aDoor);
+  room1.setSide(South, mazeFactory.makeWall());
+  room1.setSide(West, mazeFactory.makeWall());
+  
+  room2.setSide(North, mazeFactory.makeWall());
+  room2.setSide(East, mazeFactory.makeWall());
+  room2.setSide(South, mazeFactory.makeWall());
+  room2.setSide(West, aDoor);
+  
+  return aMaze;
+};
+```
+
+이런 기본적인 구조에서 새로운 `enchantedMazeFactory`를 `mazeFactory`를 상속 받아 오버라이딩으로 구현하면 원래 코드의 수정 없이 새로운 성질의 미로를 만들 수 있다.
+
+```javascript
+const enchantedMazeFactory = () => {
+  const makeMaze = () => return maze();
+  const makeWall = () => return wall();
+  const makeRoom = () => return enchantedRoom();
+  const makeDoor = (room1, room2) => return doorNeedingSpell(room1, room2);
+};
+```
+
+혹은 폭탄이 설치된 미로를 만들고 싶으면 새로운 팩토리를 만들면 된다.
+
+## 관련 패턴
+&nbsp;AbstractFactory 클래스는 팩토리 메서드 패턴을 이용해서 구현되며, 원형 패턴을 이용하기도 한다. ConcreteFactory는 싱글톤으로 구현하는 경우가 많다.
