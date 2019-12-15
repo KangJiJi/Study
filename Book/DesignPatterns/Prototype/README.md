@@ -106,3 +106,6 @@ let bombedMazeFactory = MazePrototypeFactory(maze, bombedWall, roomWithABoom, do
 
 let maze = mazeGame(simpleMazeFactory);
 ```
+
+## 관련 패턴
+&nbsp;원형 패턴과 푸상 팩토리 패턴은 경쟁적인 관계이지만 함께 사용될 수 있다.
