@@ -80,12 +80,44 @@ const mazeGame = () => {
 }
 ```
 
-위 `mazeGame`을 상속 받아서 오버라이딩을 통해 다음과 같이 새로운 게임을 만들 수 있다.
+```javascript
+class MazeGame {
+  createMaze() {
+    const aMaze = makeMaze();
+    const room1 = makeRoom();
+    const room2 = makeRoom();
+    const aDoor = makeDoor(room1, room2);
+
+    aMaze.addRoom(room1);
+    aMaze.addRoom(room2);
+
+    room1.setSide(North, makeWall());
+    room1.setSide(East, aDoor);
+    room1.setSide(South, makeWall());
+    room1.setSide(West, makeWall());
+    
+    room2.setSide(North, makeWall());
+    room2.setSide(East, makeWall());
+    room2.setSide(South, makeWall());
+    room2.setSide(West, aDoor);
+    
+    return aMaze;
+  };
+
+  // 팩토리 메서드들
+  makeMaze() { return new Maze(); };
+  makeRoom(n) { return new Room(n); };
+  makeWall() { return new Wall(); };
+  makeDoor(room1, room2) { return new Door(room1, room2); };
+}
+```
+
+위 `MazeGame`을 상속 받아서 오버라이딩을 통해 다음과 같이 새로운 게임을 만들 수 있다.
 
 ```javascript
-const bombedMazeGame = () => {
-  const makeRoom = (n) => roomWithBomb(n);
-  const makeWall = () => bombedWall();
+class bombedMazeGame extends MazeGame {
+  makeRoom(n) { return new RoomWithBomb(n); };
+  makeWall() { return new BombedWall; };
 }
 ```
 

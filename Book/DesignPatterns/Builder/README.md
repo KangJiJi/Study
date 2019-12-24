@@ -36,21 +36,23 @@ Builder(빌더)
 * Builder에 있는 메서드에 대해서는 구현을 제공하지 않는 게 일반적이다.
 
 ## 예제 코드
-&nbsp;`mazeBuilder`클래스를 통해 미로를 복합하는 각각의 요소를 생성하는 연산을 정의한다.
+&nbsp;`MazeBuilder`클래스를 통해 미로를 복합하는 각각의 요소를 생성하는 연산을 정의한다.
 
 ```javascript
-const mazeBuilder = () => {
-  const buildMaze = () => {}
-  const buildRoom = (room) => {}
-  const buildDoor = (roomFrom, roomTo) => {}
-  const getMaze = () => {}
+class MazeBuilder {
+  constructor() {};
+
+  buildMaze() {};
+  buildRoom(room) {};
+  buildDoor(roomFrom, roomTo) {};
+  getMaze() { return 0; };
 }
 ```
 
-`createMaze`는 `mazeBuilder`의 인스턴스를 인자로 받을 수 있는 함수로 정의한다.
+`createMaze`는 `MazeBuilder`의 인스턴스를 인자로 받을 수 있는 함수로 정의한다.
 
 ```javascript
-const createMaze = (builder) => {
+const createMaze = builder => {
   builder.buildMaze();
 
   builder.buildRoom(1);
@@ -63,34 +65,49 @@ const createMaze = (builder) => {
 
 위 `createMaze`는 내부 표현을 은닉한다. 미로, 방, 문을 만드는 과정의 연속일 뿐 이들이 어떻게 미로를 복합하는지, 방과 문의 관계가 어떻게 되는지 알 수 없다. 그저 필요한 요소만 계속 만들어 달라고 요청할 뿐이다.
 
-`mazeBuilder`는 단지 미로를 생성하는 인터페이스를 정의하는 것이다. 실제 구현은 `mazeBuilder`의 서브클래스에 들어있다. 다음은 `standardMazeBuilder`의 구현이다.
+`MazeBuilder`는 단지 미로를 생성하는 인터페이스를 정의하는 것이다. 실제 구현은 `MazeBuilder`의 서브클래스에 들어있다. 다음은 `StandardMazeBuilder`의 구현이다.
 
 ```javascript
-const standardMazeBuilder = () => {
-  const buildMaze = () => currentMaze = maze();
-  const buildRoom = (roomNum) => {
-    let room = room(roomNum);
-    currentMaze.addRoom(room);
+class StandardMazeBuilder extends MazeBuilder {
+  constructor() {
+    super();
+    this.currentMaze = 0;
+  };
 
-    room.setSide(North, wall());
-    room.setSide(South, wall());
-    room.setSide(East, wall());
-    room.setSide(West, wall());
-  }
-  const buildDoor = (roomNum1, roomNum2) => {
-    let room1 = currentMaze.roomNo(roomNum1);
-    let room2 = currentMaze.roomNo(roomNum2);
-    let door = door(room1, room2);
+  buildMaze() {
+    this.currentMaze = new Maze;
+  };
+
+  buildRoom(roomNum) {
+    let room = new Room(roomNum);
+    this.currentMaze.addRoom(room);
+
+    room.setSide(North, new Wall);
+    room.setSide(South, new Wall);
+    room.setSide(East, new Wall);
+    room.setSide(West, new Wall);
+  };
+
+  buildDoor(roomFrom, roomTo) {
+    let room1 = this.currentMaze.roomNo(roomFrom);
+    let room2 = this.currentMaze.roomNo(roomTo);
+    let door = new Door(room1, room2);
 
     room1.setSide(commonWall(room1, room2), door);
     room2.setSide(commonWall(room2, room1), door);
-  }
-  const getMaze = () => {}
-  let currentMaze = 0;
+  };
+
+  commonWall(room1, room2) {
+    // 두 방 사이에 있는 벽의 방향을 결정하는 메서드
+  }; 
+
+  getMaze() {
+    return this.currentMaze;
+  };
 }
 ```
 
-이제 `createMaze`의 인자 값으로 `standardMazeBuilder`를 넘겨주면 미로를 만들 수 있다.
+이제 `createMaze`의 인자 값으로 `StandardMazeBuilder`를 넘겨주면 미로를 만들 수 있다.
 
 ## 관련 패턴
 &nbsp;추상 팩토리 패턴과 빌더 패턴은 비슷한 모습을 보인다. 차이점은 빌더 패턴은 복잡한 객체의 단계별 생성에 중점을 둔 반면, 추상 팩토리 패턴은 제품의 유사군들이 존재할 때 유연한 설계에 중점을 둔다. 빌더 패턴의 `createMaze`와 추상 팩토리 패턴의 `mazeGame`에서 차이를 확인할 수 있다. 또한 빌더 패턴은 생성의 마지막 단계에서 제품을 반환하고, 추상 팩토리 패턴은 만드는 즉시 제품을 반환한다.

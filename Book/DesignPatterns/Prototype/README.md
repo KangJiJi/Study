@@ -93,18 +93,15 @@ const mazeGame = (mazeFactory) => {
   return aMaze;
 };
 
-let simpleMazeFactory = MazePrototypeFactory(maze, wall, room, door);
-
+let simpleMazeFactory = MazePrototypeFactory(new Maze, new Wall, new Room, new Door);
 let maze = mazeGame(simpleMazeFactory);
 ```
 
 만약 다른 형식의 미로를 만들고 싶으면 다른 원형으로 `MazePrototypeFactory`를 초기화 해주면 된다.
 
-
 ```javascript
-let bombedMazeFactory = MazePrototypeFactory(maze, bombedWall, roomWithABoom, door);
-
-let maze = mazeGame(simpleMazeFactory);
+let bombedMazeFactory = MazePrototypeFactory(new Maze, new BombedWall, new RoomWithABoom, new Door);
+let maze = mazeGame(bombedMazeFactory);
 ```
 
 ## 관련 패턴

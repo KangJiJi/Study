@@ -43,12 +43,14 @@ Abstract Factory(추상 팩토리)
 다음은 기본적인 미로 팩토리다.
 
 ```javascript
-const mazeFactory = () => {
-  const makeMaze = () => return maze();
-  const makeWall = () => return wall();
-  const makeRoom = () => return room();
-  const makeDoor = (room1, room2) => return door(room1, room2);
-};
+class MazeFactory {
+  constructor() {};
+
+  makeMaze() { return new Maze; };
+  makeWall() { return new Wall; };
+  makeRoom(n) { return new Room(n); };
+  makeDoor(r1, r2) { return new Door(r1, r2); };
+}
 ```
 
 다음은 `mazeFactory`를 매개변수로 받아 언제든지 모양은 같지만 다른 성질을 가진 미로를 만들 수 있는 추상 팩토리다.
@@ -77,18 +79,31 @@ const mazeGame = (mazeFactory) => {
 };
 ```
 
-이런 기본적인 구조에서 새로운 `enchantedMazeFactory`를 `mazeFactory`를 상속 받아 오버라이딩으로 구현하면 원래 코드의 수정 없이 새로운 성질의 미로를 만들 수 있다.
+이런 기본적인 구조에서 새로운 `EnchantedMazeFactory`를 `MazeFactory`를 상속 받아 오버라이딩으로 구현하면 원래 코드의 수정 없이 새로운 성질의 미로를 만들 수 있다.
 
 ```javascript
-const enchantedMazeFactory = () => {
-  const makeMaze = () => return maze();
-  const makeWall = () => return wall();
-  const makeRoom = () => return enchantedRoom();
-  const makeDoor = (room1, room2) => return doorNeedingSpell(room1, room2);
-};
+class EnchantedMazeFactory extends MazeFactory {
+  constructor() {
+    super();
+  };
+
+  makeRoom(n) { return new EnchantedRoom(n); };
+  makeDoor(r1, r2) { return new DoorNeedingSpell(r1, r2); };
+}
 ```
 
 혹은 폭탄이 설치된 미로를 만들고 싶으면 새로운 팩토리를 만들면 된다.
+
+```javascript
+class BombedmazeFactory extends MazeFactory {
+  constructor() {
+    super();
+  };
+
+  makeWall() { return new BombedWall; };
+  makeRoom(n) { return new RoomWithABomb(n); };
+}
+```
 
 ## 관련 패턴
 &nbsp;AbstractFactory 클래스는 팩토리 메서드 패턴을 이용해서 구현되며, 원형 패턴을 이용하기도 한다. ConcreteFactory는 싱글톤으로 구현하는 경우가 많다.
