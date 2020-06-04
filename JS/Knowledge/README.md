@@ -7,3 +7,5 @@
 ## 03. [Event loop](https://github.com/KangJiJi/Study/tree/master/JS/Knowledge/EventLoop)
 
 ## 04. [ESLint And Prettier](https://github.com/KangJiJi/Study/tree/master/JS/Knowledge/ESLintAndPrettier)
+
+## 05. [Prevent Drag](https://github.com/KangJiJi/Study/tree/master/JS/Knowledge/PreventDrag)
