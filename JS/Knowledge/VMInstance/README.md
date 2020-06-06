@@ -8,11 +8,11 @@
 
 &nbsp;구글을 가입하고 [GCP 홈페이지](https://cloud.google.com/?hl=ko)로 들어가서 [Compute Engine 제품](https://cloud.google.com/compute?hl=ko#benefits)을 선택하고 Console로 들어가서 새로운 프로젝트를 만들 수 있다.
 
-<center><img src="https://user-images.githubusercontent.com/22635168/83936833-40df5300-a802-11ea-90c1-08f7a57f1f21.png" width="500" height="auto"></center>
+<img src="https://user-images.githubusercontent.com/22635168/83936833-40df5300-a802-11ea-90c1-08f7a57f1f21.png" width="500" height="auto">
 
 프로젝트를 만들고 새 VM 인스턴스를 만들 수 있다. 머신의 구성은 상황에 맞게 설정하고 `Ubuntu 20.04 LTS`를 사용한다.
 
-<center><img src="https://user-images.githubusercontent.com/22635168/83936895-032efa00-a803-11ea-9b8f-44763cf2db58.png"></center>
+<img src="https://user-images.githubusercontent.com/22635168/83936895-032efa00-a803-11ea-9b8f-44763cf2db58.png">
 
 ## SSH(Secure SHell) 접속
 
@@ -37,7 +37,7 @@
 
 &nbsp;GCP의 메타데이터 탭에서 공개 키를 복사 후 등록한다.
 
-<center><img src="https://user-images.githubusercontent.com/22635168/83943865-4c4e7080-a83a-11ea-8168-0d268575a27a.png"></center>
+<img src="https://user-images.githubusercontent.com/22635168/83943865-4c4e7080-a83a-11ea-8168-0d268575a27a.png">
 
 ## SSH 접속
 
@@ -112,7 +112,7 @@
 
 &nbsp;SSH에는 v1과 v2가 있는데 v1의 보안성을 보완해서 나온 것이 v2다. v1과 v2를 모두 지원하도록 설정된 서버에서 클라이언트가 SSH 접속을 시도할 때 중간에 누군가 강제로 SSHv1으로 연결되게끔 만드는 것이다.
 
-<center><img src="https://user-images.githubusercontent.com/22635168/83945512-131bfd80-a846-11ea-86ec-4e5fc07c4922.png"></center>
+<img src="https://user-images.githubusercontent.com/22635168/83945512-131bfd80-a846-11ea-86ec-4e5fc07c4922.png">
 
 이런 경우가 있으면 서버에서 친절하게 알려주기 때문에 다음 명령어로 해결 가능하다.
 
