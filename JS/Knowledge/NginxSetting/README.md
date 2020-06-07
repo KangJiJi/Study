@@ -31,11 +31,11 @@
 
 따라서 `Stable`버전을 위한 명령어는 다음과 같다.
 
-> echo "deb http://nginx.org/packages/ubuntu `lsb_release -cs` nginx" | sudo tee /etc/apt/sources.list.d/nginx.list
+> echo "deb http://nginx.org/packages/ubuntu \`lsb_release -cs\` nginx" | sudo tee /etc/apt/sources.list.d/nginx.list
 
 그리고 'Mainline`버전을 위한 명령어는 다음과 같다.
 
-> echo "deb http://nginx.org/packages/mainline/ubuntu `lsb_release -cs` nginx" | sudo tee /etc/apt/sources.list.d/nginx.list
+> echo "deb http://nginx.org/packages/mainline/ubuntu \`lsb_release -cs\` nginx" | sudo tee /etc/apt/sources.list.d/nginx.list
 
 ## 패키지 신뢰성 확인
 
