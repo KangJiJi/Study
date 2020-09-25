@@ -11,3 +11,5 @@ Refactoring 정리<br>
 ### 03. [코드에서 나는 악취](https://github.com/KangJiJi/Study/tree/master/Book/Refactoring/chapter03)
 
 ### 04. [테스트 구축하기](https://github.com/KangJiJi/Study/tree/master/Book/Refactoring/chapter04)
+
+### 05. [리팩터링 카탈로그 보는 법](https://github.com/KangJiJi/Study/tree/master/Book/Refactoring/chapter05)
