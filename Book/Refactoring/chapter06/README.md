@@ -262,3 +262,68 @@ class Reading {
 - 함수들이 공유하는 공통 데이터 레코드를 캡슐화한다.
 - 공통 레코드를 사용하는 함수 각각을 새 클래스로 옮긴다.
 - 데이터를 조작하는 로직들은 함수로 추출해서 새 클래스로 옮긴다.
+
+## 여러 함수를 변환 함수로 묶기(Combine Functions into Transform)
+
+```javascript
+function base(aReading) { ... };
+function taxableCharge(aReading) { ... };
+```
+
+```javascript
+function enrichReading(argReading) {
+  const aReading = _.cloneDeep(argReading);
+  aReading.baseCharge = base(aReading);
+  aReading.taxableCharge = taxableCharge(aReading);
+  return aReading;
+}
+```
+
+### 배경
+
+&nbsp;변환 함수는 원본 데이터의 필요한 부분을 변경해서 다시 반환한다. 또한 이 리팩터링은 여러 함수를 클래스로 묶기로 대체 가능하다. 하지만 원본 데이터가 코드 안에서 갱신될 떄는 클래스로 묶는다. 변환 함수를 이용하면 새로운 레코드에 가공한 데이터를 저장하므로, 원본 데이터가 수정되면 일관성이 깨질 수 있다.
+
+### 절차
+
+- 변환할 레코드를 입력받아서 값을 그대로 반환하는 변환 함수를 만든다.
+- 묶을 함수 중 함수 하나를 골라서 본문 코드를 변환 함수로 옮기고, 처리 결과를 레코드에 새 필드로 기록한다. 그런 다음 클라이언트 코드가 이 필드를 사용하도록 수정한다.
+- 테스트 한다.
+- 나머지 관련 함수도 위 과정에 따라 처리한다.
+
+## 단계 쪼개기(Split Phase)
+
+```javascript
+const orderData = orderString.split(/\s+/);
+const productPrice = priceList[orderData[0].split("-")[1]];
+const orderPrice = parseInt(orderData[1]) * productPrice;
+```
+
+```javascript
+const orderRecord = parseOrder(order);
+const orderPrice = price(orderRecord, priceList);
+
+function parseOrder(aString) {
+  const values = aString.split(/\s+/);
+  return {
+    productID: values[0].split("-")[1],
+    quantity: parseInt(values[1]),
+  };
+}
+
+function price(order, priceList) {
+  return order.quantity * priceList[order.productID];
+}
+```
+
+### 배경
+
+&nbsp;잘 분리된 모듈은 다른 모듈의 상세 내용을 몰라도 원하는 수정이 가능하다. 따라서 서로 다른 두 대상을 한꺼번에 다루는 코드는 별개의 모듈로 나눠야 한다. 하나의 동작을 연이은 두 단계로 쪼개야 한다.
+
+### 절차
+
+- 두 번째 단계에 해당하는 코드를 독립 함수로 추출한다.
+- 테스트 한다.
+- 중간 데이터 구조를 만들어서 앞에서 추출한 함수의 인수로 추가한다.
+- 테스트 한다.
+- 추출한 두 번째 단계 함수의 매개변수를 하나씩 검토한다. 그중 첫 번째 단계에서 사용되는 것은 중간 데이터 구조로 옮긴다. 하나씩 옮길 때마다 테스트한다.
+- 첫 번째 단계 코드를 함수로 추출하면서 중간 데이터 구조를 반환하도록 만든다.
