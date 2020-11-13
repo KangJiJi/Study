@@ -17,3 +17,5 @@ Refactoring 정리<br>
 ### 06. [기본적인 리팩터링](https://github.com/KangJiJi/Study/tree/master/Book/Refactoring/chapter06)
 
 ### 07. [캡슐화](https://github.com/KangJiJi/Study/tree/master/Book/Refactoring/chapter07)
+
+### 08. [기능 이동](https://github.com/KangJiJi/Study/tree/master/Book/Refactoring/chapter08)
