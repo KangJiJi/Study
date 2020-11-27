@@ -161,3 +161,116 @@ appliesToMass = states.includes("MA");
 
 - 인라인 코드를 함수 호출로 대체한다.
 - 테스트한다.
+
+## 문장 슬라이드하기(Slide Statements)
+
+```javascript
+const pricingPlan = retrievePricingPlan();
+const order = retreiveOrder();
+let charge;
+const chargePerUnit = pricingPlan.unit;
+```
+
+```javascript
+const pricingPlan = retrievePricingPlan();
+const chargePerUnit = pricingPlan.unit;
+const order = retreiveOrder();
+let charge;
+```
+
+### 배경
+
+&nbsp;관련된 코드들이 가까이 모여 있다면 이해하기가 더 쉽다. 따라서 관련 코드끼리 모아야한다. 다만 슬라이드가 안전한지 판단하려면 코드를 완벽히 이해해야 한다. 따라서 테스트코드가 중요한 역할을 한다.
+
+### 절차
+
+- 코드가 이동할 목표 위치를 찾는다.
+- 코드 조각을 원래 위치에서 잘라내어 목표 위치에 붙여 넣는다.
+- 테스트한다.
+
+## 반복문 쪼개기(Split Loop)
+
+```javascript
+let averageAge = 0;
+let totalSalary = 0;
+
+for (const p of people) {
+  arverageAge += p.age;
+  totalSalary += p.salary;
+}
+
+averageAge = averageAge / people.length;
+```
+
+```javascript
+let averageAge = 0;
+for (const p of people) {
+  arverageAge += p.age;
+}
+
+let totalSalary = 0;
+for (const p of people) {
+  totalSalary += p.salary;
+}
+
+averageAge = averageAge / people.length;
+```
+
+### 배경
+
+&nbsp;종종 반복문 하나에서 두 가지 일을 수행한다. 하지만 각각의 반복문으로 분리해두면 수정할 동작 하나만 이해하면 된다. 또한 서로 다른 일들이 한 함수에서 이뤄지고 있다는 신호일 수 있다. 따라서 함수 추출하기랑 같이 수행하는 일이 잦다.
+
+### 절차
+
+- 반복문을 복제해 두 개로 만든다.
+- 반복문이 중복되어 생기는 부수효과를 파악해서 제거한다.
+- 테스트한다.
+- 완료됐으면, 각 반복문을 함수로 추출할지 고민해본다.
+
+## 반복문을 파이프라인으로 바꾸기(Replace Loop with Pipeline)
+
+```javascript
+const names = [];
+
+for (const i of input) {
+  if (i.job === "rogrammer") {
+    names.push(i.name);
+  }
+}
+```
+
+```javascript
+const names = input.filter((i) => i.job === "programmer").map((i) => i.name);
+```
+
+### 배경
+
+&nbsp;컬렉션 파이프라인(list.filter().map()...)을 이용하면 처리 과정을 일련의 연산으로 표현할 수 있다. 대표적으로 map과 filter가 있다. 논리를 파이프라인으로 표현하면 이해하기 훨씬 쉬워진다.
+
+### 절차
+
+- 반복문에서 사용하는 컬렉션을 가리키는 변수를 하나 만든다.
+- 반복문의 첫 줄부터 시작해서, 각각의 단위 행위를 적절한 컬렉션 파이프라인 연산으로 대체한다.
+- 반복문의 모든 동작을 대체했다면 반복문 자체를 지운다.
+
+## 죽은 코드 제거하기(Remove Dead Code)
+
+```javascript
+if (false) {
+  doSomethingThatUsedToMatter();
+}
+```
+
+```javascript
+X;
+```
+
+### 배경
+
+&nbsp;코드가 더 이상 사용되지 않게 됐다면 지워야 한다.
+
+### 절차
+
+- 죽은 코드를 외부에서 참조할 구 있는 경우라면 혹시라도 호출하는 곳이 있는지 확인한다.
+- 없다면 죽은 코드를 제거한다.
+- 테스트한다.
