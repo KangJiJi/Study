@@ -21,3 +21,5 @@ Refactoring 정리<br>
 ### 08. [기능 이동](https://github.com/KangJiJi/Study/tree/master/Book/Refactoring/chapter08)
 
 ### 09. [데이터 조직화](https://github.com/KangJiJi/Study/tree/master/Book/Refactoring/chapter09)
+
+### 10. [조건부 로직 간소화](https://github.com/KangJiJi/Study/tree/master/Book/Refactoring/chapter10)
