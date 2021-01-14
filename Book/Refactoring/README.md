@@ -23,3 +23,5 @@ Refactoring 정리<br>
 ### 09. [데이터 조직화](https://github.com/KangJiJi/Study/tree/master/Book/Refactoring/chapter09)
 
 ### 10. [조건부 로직 간소화](https://github.com/KangJiJi/Study/tree/master/Book/Refactoring/chapter10)
+
+### 11. [API 리팩터링](https://github.com/KangJiJi/Study/tree/master/Book/Refactoring/chapter11)
