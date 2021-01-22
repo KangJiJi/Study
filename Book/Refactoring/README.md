@@ -25,3 +25,5 @@ Refactoring 정리<br>
 ### 10. [조건부 로직 간소화](https://github.com/KangJiJi/Study/tree/master/Book/Refactoring/chapter10)
 
 ### 11. [API 리팩터링](https://github.com/KangJiJi/Study/tree/master/Book/Refactoring/chapter11)
+
+### 12. [상속 다루기](https://github.com/KangJiJi/Study/tree/master/Book/Refactoring/chapter12)
