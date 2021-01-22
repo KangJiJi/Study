@@ -182,3 +182,216 @@ function targetTemperature(aPlan, currentTemperature) {
 - 방금 만든 변수를 인라인하여 제거한다.
 - 원래 함수도 인라인한다.
 - 새 함수의 이름을 원래 함수의 이름으로 고쳐준다.
+
+## 세터 제거하기(Remove Setting Method)
+
+```javascript
+class Person {
+  get name() { ... }
+  set name(aString) { ... }
+}
+```
+
+```javascript
+class Person {
+  get name() { ... }
+}
+```
+
+### 배경
+
+&nbsp;세터 메소드는 필드가 수정될 수 있다는 뜻이다. 하지만 생성하지 않아도 되는 경우가 있다. 첫째, 생성자에서만 접근자 메서드를 사용할 때. 둘째, 클라이언트에서 생성 스크립트를 사용해 객체를 생성할 때다. 생성 스크립트란 객체 생성 후 일련의 세터를 호출하여 객체를 완성하는 형태의 코드다. 따라서 위 두 경우에 세터를 제거하여 의도를 더 정확하게 전달하는 것이 좋다.
+
+### 절차
+
+- 설정해야 할 값을 생성자에서 받지 않는다면 그 값을 받을 매개변수를 생성자에 추가한다. 그런 다음 생성자 안에서 적절한 세터를 호출한다.
+- 생성자 밖에서 세터를 호출하는 곳을 찾아 제거하고, 대신 새로운 생성자를 사용하도록 한다. 하나 수정할 때마다 테스트한다.
+- 세터 메서드를 인라인한다. 가능하다면 해당 필드를 불변으로 만든다.
+- 테스트한다.
+
+## 생성자를 팩터리 함수로 바꾸기(Replace Constructor with Factory Function)
+
+```javascript
+leadEngineer = new Employee(document.leadEngineer, "E");
+```
+
+```javascript
+leadEngineer = createEmployee(document.leadEngineer);
+```
+
+### 배경
+
+&nbsp;생성자는 객체를 초기화하는 특별한 용도의 함수다. 생성자는 인스턴스를 반환하고, `new`연산자를 사용해야한다. 하지만 팩터리 함수는 이런 제약이 없다.
+
+### 절차
+
+- 팩터리 함수를 만든다. 팩터리 함수의 본문에서는 원래의 생성자를 호출한다.
+- 생성자를 호출하던 코드를 팩터리 함수 호출로 바꾼다.
+- 하나씩 수정할 때마다 테스트한다.
+- 생성자의 가시 범위가 최소가 되도록 제한한다.
+
+## 함수를 명령으로 바꾸기(Replace Function with Command)
+
+```javascript
+function score(candidate, medicalExam, scoringGuide) {
+  let result = 0;
+  let healthLevel = 0;
+}
+```
+
+```javascript
+class Score {
+  constructor(candidate, medicalExam, scoringGuide) {
+    this._candidate = candidate;
+    this._medicalExam = medicalExam;
+    this._scoringGuide = scoringGuide;
+  }
+
+  execute() {
+    this._result = 0;
+    this._healthLevel = 0;
+  }
+}
+```
+
+### 배경
+
+&nbsp;특정 함수만을 위한 객체를 만들어서 함수를 객체안에 캡슐화하면 더 유용해지는 상황이 있다. 이런 객체를 `명령 객체` 혹은 `명령`이라 한다. 명령 객체 대부분은 메서드 하나로 구성되며, 메서드를 요청해 실행하는 것이 이 객체의 목적이다. 이는 유연하게 함수를 제어하고 표현할 수 있다. undo와 같은 보조 연산, 수명주기를 더 정밀하게 제어하는 데 필요한 매개변수를 만들어주는 메서드도 제공할 수 있다.
+
+### 절차
+
+- 대상 함수의 기능을 옮길 빈 클래스를 만든다. 클래스 이름은 함수 이름에 기초해 짓는다.
+- 방금 생성한 빈 클래스로 함수를 옮긴다.
+- 함수의 인수들 각각은 명령의 필드로 만들어 생성자를 통해 설정할지 고민해본다.
+
+## 명령을 함수로 바꾸기(Replace Command with Function)
+
+```javascript
+class ChargeCalculator {
+  constructor(customer, usage) {
+    this._customer = customer;
+    this._usage = usage;
+  }
+  execute() [
+    return this._customer.rate * this._usage;
+  ]
+}
+```
+
+```javascript
+function charge(customer, usage) {
+  return customer.rate * usage;
+}
+```
+
+### 배경
+
+&nbsp;명령 객체는 복잡한 연산을 다룰 수 있는 강력한 메커니즘을 제공한다. 하지만 그저 함수를 하나 호출해 정해진 일을 수행하는 용도이면서, 로직이 크게 복잡하지 않다면 평범한 함수로 바꿔주는 게 낫다.
+
+### 절차
+
+- 명령을 생성하는 코드와 명령의 실행 메서드를 호출하는 코드를 함께 함수로 추출한다.
+- 명령의 실행 함수가 호출하는 보조 메서드들 각각을 인라인한다.
+- 함수 선언 바꾸기를 적용하여 생성자의 매개변수 모두를 명령의 실행 메서드로 옮긴다.
+- 명령의 실행 메서드에서 참조하는 필드들 대신 대응하는 매개변수를 사용하게끔 바꾼다. 하나씩 수정할 때마다 테스트한다.
+- 생성자 호출과 명령의 실행 메서드 호출을 호출자 안으로 인라인한다.
+- 테스트한다.
+- 죽은 코드 제거하기로 명령 클래스를 없앤다.
+
+## 수정된 값 반환하기(Return Modified Value)
+
+```javascript
+let totalAscent = 0;
+calculateAscent();
+
+function calculateAscent() {
+  for (let i = 1; i < points.length; i++) {
+    const verticalChange = points[i].elevation - points[i - 1].elevation;
+    totalAscent += verticalChange > 0 ? verticalChange : 0;
+  }
+}
+```
+
+```javascript
+let totalAscent = calculateAscent();
+
+function calculateAscent() {
+  let result = 0;
+  for (let i = 1; i < points.length; i++) {
+    const verticalChange = points[i].elevation - points[i - 1].elevation;
+    result += verticalChange > 0 ? verticalChange : 0;
+  }
+  return result;
+}
+```
+
+### 배경
+
+&nbsp;데이터가 어떻게 수정되는지 이해하는 일은 어렵다. 따라서 변수를 갱신하는 함수라면 수정된 값을 반환하여 호출자가 그 값을 변수에 담아두도록 하면 데이터가 수정됨을 알려줄 수 있다.
+
+### 절차
+
+- 함수가 수정된 값을 반환하게 하여 호출자가 그 값을 자신의 변수에 저장하게 한다.
+- 테스트한다.
+- 피호출 함수 안에 반환할 값을 가리키는 새로운 변수를 선언한다.
+- 테스트한다.
+- 계산이 선언과 동시에 이뤄지도록 통합한다.
+- 테스트한다.
+- 피호출 함수의 변수 이름을 새 역할에 어울리도록 바꿔준다.
+- 테스트한다.
+
+## 오류 코드를 예외로 바꾸기(Replace Error Code with Exception)
+
+```javascript
+if (data) return new ShippingRules(data);
+else return -23;
+```
+
+```javascript
+if (data) return new ShippingRules(data);
+else return new OrderProcessingError(-23);
+```
+
+### 배경
+
+&nbsp;예외는 독립적인 오류 처리 메커니즘이다. 오류가 발견되면 적절한 예외 핸들러를 찾을 때까지 콜스택을 타고 위로 전파된다. 예외는 정상 동작 범주에 들지 않는 오류를 나타낼 때만 쓰여야 한다. 그렇지 않으면 예외 대신 오류를 검출하여 프로그램을 정상 흐름으로 되돌리게끔 처리해야 한다.
+
+### 절차
+
+- 콜스택 상위에 해당 예외 처리할 예외 핸들러를 작성한다.
+- 테스트한다.
+- 해당 오류 코드를 대체할 예외와 그 밖의 예외를 구분할 식별 방법을 찾는다.
+- 정적 검사를 수행한다.
+- catch절을 수정하여 직접 처리할 수 있는 예외는 적절히 대처하고 그렇지 않은 예외는 다시 던진다.
+- 테스트한다.
+- 오류 코드를 반환하는 곳 모두에서 예외를 던지도록 수정한다. 하나씩 수정할 때마다 테스트한다.
+- 모두 수정했다면 그 오류 코드를 콜스택 위로 전달하는 코드를 모두 제거한다. 하나씩 수정할 때마다 테스트한다.
+
+## 예외를 사전확인으로 바꾸기(Replace Exception with Precheck)
+
+```javascript
+double getValueForPeriod (int periodNumber) {
+  try {
+    return values[periodNumber];
+  } catch (ArrayIndexOutOfBoundsException e) {
+    return 0;
+  }
+}
+```
+
+```javascript
+doubler getValueForPeriod (int periodNumber) {
+  return (periodNumber >= values.length) ? 0 : values[periodNumber];
+}
+```
+
+### 배경
+
+&nbsp;예외는 예외적으로 동작할 때만 쓰여야 한다. 따라서 함수 수행 시 문제가 될 수 있는 조건을 함수 호출 전에 검사할 수 있다면, 예외를 던지는 대신 호출하는 곳에서 조건을 검사하도록 해야 한다.
+
+### 절차
+
+- 예외를 유발하는 상황을 검사할 수 잇는 조건문을 추가한다. catch 블록의 코드를 조건문의 조건절 중 하나로 옮기고, 남은 try 블록의 코드를 다른 조건절로 옮긴다.
+- catch 블록에 어서션을 추가하고 테스트한다.
+- try 문과 catch 블록을 제거한다.
+- 테스트한다.
