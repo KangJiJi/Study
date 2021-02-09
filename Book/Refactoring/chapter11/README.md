@@ -272,9 +272,10 @@ class ChargeCalculator {
     this._customer = customer;
     this._usage = usage;
   }
-  execute() [
+
+  execute() {
     return this._customer.rate * this._usage;
-  ]
+  }
 }
 ```
 
