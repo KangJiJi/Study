@@ -1,31 +1,33 @@
-Appendix A 다양한 환경의 자바스크립트
-===================================
+# Appendix A 다양한 환경의 자바스크립트
 
 &nbsp;다양환 환경에서의 자바스크립트에 대해서 다룬다.
 
 ## 부록 A.1 ECMAScript
+
 &nbsp;자바스크립트는 ECMAScript 명세의 브라우저 구현체다. 다음은 ECMAScript 부록B 에 나오는 공식 명세서와 자바스크립트의 주요 호환성의 차이다.
 
-* `0123`(10진수 83)와 같은 8진수 리터럴은 느슨한 모드에서 사용할 수 없다.
-* `window.escape()` / `window.unescape()`를 이용하여 문자열 % 기호로 구분된 16진수 이스케이프 시퀀스 변환/역변환이 가능하다.
-* `String.prototype.substr`은 `String.prototype.substring`과 유사하나, 두 번째 인자는 종료 인덱스가 아닌, 길이를 의미한다.
+- `0123`(10진수 83)와 같은 8진수 리터럴은 느슨한 모드에서 사용할 수 없다.
+- `window.escape()` / `window.unescape()`를 이용하여 문자열 % 기호로 구분된 16진수 이스케이프 시퀀스 변환/역변환이 가능하다.
+- `String.prototype.substr`은 `String.prototype.substring`과 유사하나, 두 번째 인자는 종료 인덱스가 아닌, 길이를 의미한다.
 
 ### 웹 ECMAScript
+
 &nbsp;웹 ECMAScript 명세는 공식 ECMAScript 명세와 브라우저 자바스크립트 구현체와의 차이점을 기술한다. 이는 브라우저의 필수 요건이다.
 
-* `<!--and-->`는 한 줄짜리 유효한 주석 구분자(delimiter)다.
-* `String.prototype` 추가 `anchor()`, `big()`, `blink()`, `bold()`, `fixed()`, `fontcolor()`, `fontsize()`, `italics()`, `link()`, `small()`, `strike()`, `sub()`
-* `RegExp` 확장
-* `Function.prototype` 추가
+- `<!--and-->`는 한 줄짜리 유효한 주석 구분자(delimiter)다.
+- `String.prototype` 추가 `anchor()`, `big()`, `blink()`, `bold()`, `fixed()`, `fontcolor()`, `fontsize()`, `italics()`, `link()`, `small()`, `strike()`, `sub()`
+- `RegExp` 확장
+- `Function.prototype` 추가
 
 ## 부록 A.2 호스트 객체
+
 &nbsp;자바스크립트 변수 관련 규칙도 '호스트 객체(Host Objects)'에 관해서는 예외다.
 
 ```javascript
 var a = document.createElement("div");
 
 typeof a; // "object"
-Object.prototype.toString.call(a); // "[ovject HTMLDivElement]"
+Object.prototype.toString.call(a); // "[object HTMLDivElement]"
 
 a.tagName; // "DIV"
 ```
@@ -33,6 +35,7 @@ a.tagName; // "DIV"
 위 코드에서 `a`가 DOM 요소를 가리키는 호스트 객체다. 자바스크립트 코드가 다양한 환경에서 잘 실행되기 위해서는 호스트 객체가 꼭 필요하다. 그래서 호스트 객체의 동작방식을 항상 잘 살펴봐야 한다. 대표적인 호스트 객체로는 `console`객체가 있다.
 
 ## A.3 전역 DOM 변수
+
 &nbsp;전역 스코프에서 변수를 선언하면 전역 객체에도 동일한 이름의 프로퍼티가 생성된다. 그리고 `id`속성으로 DOM요소를 생성해도 같은 이름을 가진 전역 변수가 생성된다.
 
 ```html
@@ -46,28 +49,33 @@ console.log(foo); // HTML요소
 이러한 이유 때문이라도 전역 변수 사용은 자제하는 것이 좋고 사용해야한다면 충돌하지 않는 이름을 사용해야한다.
 
 ## A.4 네이티브 프로토타입
+
 &nbsp;어떠한 일이 있어도 네이티브 프로토타입은 확장하지 말아야 한다.
 
-* 우리의 코드가 특정 환경에서만 실행될 것이라는, 확신이 없는 한 네이티브를 확장하면 안된다.
-* 무차별적인 확장은 피해야 한다.
+- 우리의 코드가 특정 환경에서만 실행될 것이라는, 확신이 없는 한 네이티브를 확장하면 안된다.
+- 무차별적인 확장은 피해야 한다.
 
 내장 메서드를 테스트하는 방법도 있을 것이다. 하지만 이런 발상은 비현실적이다. 내장 메서드가 너무 많기 때문이다. 결국 정답은 없다. 하지만 네이티브 프로토타입을 확장하면 그 뒤로는 확실하게 가시밭길이 된다.
 
 ### 심/폴리필
+
 &nbsp;구 버전환경은 유일하게 네이티브를 확장시켜도 안전한 장소로 꼽힌다.
 
 ## A.5 `<script>`들
+
 &nbsp;`<script>...</script>`태그는 파일을 넘다들면서 호이스팅 하지는 않지만 전역 객체를 공유한다.
 
 ## A.6 예약어
+
 &nbsp;변수 명으로 사용하면 안되는 예약어 목록이 있다.
 
 ## A.7 구현 한계
+
 &nbsp;엔진마다 상세한 내부 구현에 따라 실제로는 한계가 있다. 다음은 알려진 한계들이다.
 
-* 문자열 리터럴의 최대 문자 개수
-* 함수 호출 시 인자로 보낼 수 있는 데이터 사이즈
-* 함수 선언 시 인자 개수
-* 최적화되지 않은 호출 스택의 최대 깊이
-* 자바스크립트 프로그램이 연속적으로 브라우저를 블로킹한 채 실행 가능한 시간
-* 변수명 최대 길이
+- 문자열 리터럴의 최대 문자 개수
+- 함수 호출 시 인자로 보낼 수 있는 데이터 사이즈
+- 함수 선언 시 인자 개수
+- 최적화되지 않은 호출 스택의 최대 깊이
+- 자바스크립트 프로그램이 연속적으로 브라우저를 블로킹한 채 실행 가능한 시간
+- 변수명 최대 길이
