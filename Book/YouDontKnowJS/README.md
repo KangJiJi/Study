@@ -36,4 +36,6 @@ You don't know js 정리<br>
 
 ### 01. [This라나 뭐라나](https://github.com/KangJiJi/Study/tree/master/Book/YouDontKnowJS/partIII/chapter01)
 
+### 02. [This가 이런 거로군!](https://github.com/KangJiJi/Study/tree/master/Book/YouDontKnowJS/partIII/chapter02)
+
 ## Part IV
