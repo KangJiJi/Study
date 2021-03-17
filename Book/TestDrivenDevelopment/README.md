@@ -11,3 +11,5 @@ TDD 정리<br>
 ### 02. [타락한 객체](https://github.com/KangJiJi/Study/tree/master/Book/TestDrivenDevelopment/chapter02)
 
 ### 03. [모두를 위한 평등](https://github.com/KangJiJi/Study/tree/master/Book/TestDrivenDevelopment/chapter03)
+
+### 04. [프라이버시](https://github.com/KangJiJi/Study/tree/master/Book/TestDrivenDevelopment/chapter04)
