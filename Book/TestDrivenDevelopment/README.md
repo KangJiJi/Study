@@ -19,3 +19,5 @@ TDD 정리<br>
 ### 06. [돌아온 '모두를 위한 평등'](https://github.com/KangJiJi/Study/tree/master/Book/TestDrivenDevelopment/chapter06)
 
 ### 07. [사과와 오렌지](https://github.com/KangJiJi/Study/tree/master/Book/TestDrivenDevelopment/chapter07)
+
+### 08. [객체 만들기](https://github.com/KangJiJi/Study/tree/master/Book/TestDrivenDevelopment/chapter08)
