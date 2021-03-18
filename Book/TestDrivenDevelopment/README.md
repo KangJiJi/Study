@@ -15,3 +15,5 @@ TDD 정리<br>
 ### 04. [프라이버시](https://github.com/KangJiJi/Study/tree/master/Book/TestDrivenDevelopment/chapter04)
 
 ### 05. [솔직히 말하자면](https://github.com/KangJiJi/Study/tree/master/Book/TestDrivenDevelopment/chapter05)
+
+### 06. [돌아온 '모두를 위한 평등'](https://github.com/KangJiJi/Study/tree/master/Book/TestDrivenDevelopment/chapter06)
