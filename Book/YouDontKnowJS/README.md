@@ -42,4 +42,6 @@ You don't know js 정리<br>
 
 ### 04. [클래스와 객체의 혼합](https://github.com/KangJiJi/Study/tree/master/Book/YouDontKnowJS/partIII/chapter04)
 
+### 05. [프로토타입](https://github.com/KangJiJi/Study/tree/master/Book/YouDontKnowJS/partIII/chapter05)
+
 ## Part IV
