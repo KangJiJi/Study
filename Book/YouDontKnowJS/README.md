@@ -44,4 +44,6 @@ You don't know js 정리<br>
 
 ### 05. [프로토타입](https://github.com/KangJiJi/Study/tree/master/Book/YouDontKnowJS/partIII/chapter05)
 
+### 06. [작동 위임](https://github.com/KangJiJi/Study/tree/master/Book/YouDontKnowJS/partIII/chapter06)
+
 ## Part IV
