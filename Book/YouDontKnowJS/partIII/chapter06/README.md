@@ -265,4 +265,134 @@ OLOO의 관점에서는 부모도 자식도 없다. `Widget`은 유틸리티 창
 
 ## 3. 더 간단한 디자인
 
-&nbsp;
+&nbsp;작동 위임 패턴은 더 간단한 코드 아키텍처를 가능케 한다. 로그인 페이지 예시를 본다. 입력 폼을 처리하는 객체와 서버와 직접 통신하는 객체 이렇게 두 컨트롤러 객체를 구현한다.
+
+전형적인 클래스 디자인 패턴에서는 `Controller`클래스에 기본적인 기능을 담고 이를 상속받은 `LoginController`와 `AuthController`두 클래스가 구체적 작동 로직을 구현한다.
+
+```javascript
+function Controller() {
+  // ...
+}
+Controller.prototype.showDialog = function () {};
+Controller.prototype.success = function (msg) {};
+Controller.prototype.failure = function (err) {};
+
+function LoginController() {
+  Controller.call(this);
+}
+// 자식 클래스를 부모 클래스에 연결
+LoginController.prototype = Object.create(Controller.prototype);
+LoginController.prototype.getUser = function () {};
+LoginController.prototype.getPassword = function () {};
+LoginController.prototype.validateEntry = function () {};
+// failure() 오버라이딩
+LoginController.prototype.failure = function (err) {};
+
+function AuthController(login) {
+  Controller.call(this);
+  this.login = login;
+}
+// 자식 클래스를 부모 클래스에 연결
+AuthController.prototype = Object.create(Controller.prototype);
+AuthController.prototype.server = function (url, data) {};
+AuthController.prototype.checkAuth = function () {};
+// success(), failure() 오버라이딩
+AuthController.prototype.success = function () {};
+AuthController.prototype.failure = function (err) {};
+
+var auth = new AuthContoller();
+auth.checkAuth(new LoginController());
+```
+
+위 코드에서 `showDialog`, `success`, `failure`는 모든 컨트롤러가 공유하는 메서드다. `AuthController`가 로그인 폼과 연동하기 위해서 `LoginController`를 멤버 프로퍼티로 들고 있다.
+
+### 탈클래스화
+
+&nbsp;위 코드를 OLOO 디자인 패턴을 활용해 간단한 형태로 디자인한다.
+
+```javascript
+var LoginController = {
+  errors: [],
+  getUser: function () {},
+  getPassword: function () {},
+  validateEntry: function (user, pw) {},
+  showDialog: function (title, msg) {},
+  failure: function (err) {},
+};
+
+var AuthController = Object.create(LoginController);
+AuthController.errors = [];
+AuthController.checkAuth = function () {};
+AuthController.server = function (url, data) {};
+AuthController.accepted = function () {};
+AuthController.rejected = function (err) {};
+```
+
+`AuthController`는 생성자 함수가 아니므로 인스턴스화할 필요가 없다. 객체를 추가로 생성해야 할 경우는 다음과 같이 하면 된다.
+
+```javascript
+var controller1 = Object.create(AuthController);
+var controller2 = Object.create(AuthController);
+```
+
+작동 위임 패턴에서 `LoginController`와 `AuthController`는 수평적으로 서로를 엿보는 객체일 뿐이다. 또한 반대 방향으로 위임을 설정해도 전혀 문제가 없다. 그리고 똑같은 메서드 이름을 포함하지 않아도 된다.
+
+## 4. 더 멋진 구문
+
+&nbsp;ES6부터는 객체 리터럴에 단축 메서드 선언이 가능하다. 또한 위임도 `Object.setPrototypeOf()`간단하게 가능하다.
+
+```javascript
+var LoginController = {
+  errors: [],
+  getUser() {},
+  getPassword() {},
+};
+
+Object.setPrototypeOf(AuthController, LoginController);
+```
+
+### 비어휘적 식별자
+
+&nbsp;이런 단축 메서드 선언은 단점이 있다. 앞에서 배운 함수 이름에 식별자가 없는 경우 단점은 세 가지가 있다.
+
+- 스택 추적을 통해 디버깅 하기가 곤란해진다.
+- 재귀, 이벤트 바인딩 등에서 자기 참조가 어려워진다.
+- 코드 가독성이 더 나빠진다.
+
+단축 메서드 선언은 두 번째 단점을 가지고 있다. 자기 참조에 사용할 수 있는 어휘적 식별자는 없다.
+
+## 5. 인트로스펙션
+
+&nbsp;객체 유형을 거꾸로 유추하는 타입 인트로스펙션(Type introspection)은 객체의 구조와 기능을 추론하는 용도로 쓰인다. `instanceof`는 인스턴스와 클래스의 프로토타입의 관계([[Prototype]])을 알려주는 일을 한다. '덕 타이핑'을 통해 `instanceof`를 대체하는 경우도 있다.
+
+```javascript
+if (a1.something) {
+  a1.something();
+}
+```
+
+하지만 다른 기능까지 확장하여 추정하는 경향이 있어 리스크가 더해진다.
+
+OLOO스타일 코드의 타입 인트로스펙션은 깔끔하다.
+
+```javascript
+var Foo = {};
+var Bar = Object.create(Foo);
+
+var b1 = Object.create(Bar);
+
+Foo.isPrototytpeOf(Bar); // true
+Object.getPrototytpeOf(Bar) === Foo; // true
+
+Foo.isPrototytpeOf(b1); // true
+Bar.isPrototytpeOf(b1); // true
+Object.getPrototytpeOf(b1) === Bar; // true
+```
+
+## 6. 정리하기
+
+- 클래스와 상속은 디자인 패턴의 하나다.
+- 작동 위임이라는 디자인 패턴도 있다.
+- 부모/자식 관계가 아닌 동등한 입장에서 서로 위임하는 형태다
+- [[Prototype]]은 태생적으로 작동 위임 체계다.
+- 객체만으로 구성된 코드를 구성한다면 코드 아키텍처또한 더 간단하게 가져갈 수 있다.
