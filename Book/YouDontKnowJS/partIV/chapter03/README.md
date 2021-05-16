@@ -61,9 +61,9 @@ add(fetchX(), fetchY()).then(function (sum) {
 });
 ```
 
-`fetchX`와 `fetchY`를 직접 호출하여 이들의 반환 값(프로미스)을 `add`에 전달한다. 시점에 상관없이 각 프로미스가 같은 결과를 내게끔 정규환하면 미랫값을 독립적으로 추론할 수 있다. `X`, `Y`의 미랫값을 기다리는 로직은 `add`안에 숨어있다.
+`fetchX`와 `fetchY`를 직접 호출하여 이들의 반환 값(프로미스)을 `add`에 전달한다. 시점에 상관없이 각 프로미스가 같은 결과를 내게끔 정규화하면 미랫값을 독립적으로 추론할 수 있다. `X`, `Y`의 미랫값을 기다리는 로직은 `add`안에 숨어있다.
 
-프로미스의 값은 'Fullfillment'혹은 'Rejection'으로 귀결될 수 있다. 프로미스 `then()`은 첫 번째 인자로 'Fullfillment', 두 번째 인자로 'Rejection'를 받는다.
+프로미스의 값은 'Fulfillment'혹은 'Rejection'으로 귀결될 수 있다. 프로미스 `then()`은 첫 번째 인자로 'Fulfillment', 두 번째 인자로 'Rejection'를 받는다.
 
 ```javascript
 add(fetchX(), fetchY()).then(
