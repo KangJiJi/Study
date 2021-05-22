@@ -393,3 +393,261 @@ var p = new Promise(function (x, y) {
 ```
 
 `y`는 `reject`라고 쓰는 것이 좋다. 그리고 `x`에 대해서는 많은 책에서 `resolve`라고 사용한다. 하지만 `fulfill`이라는 이름이 더 정확하다. 실제 ES6 명세에서도 두 콜백을 `onFulfilled`와 `onRejected`라고 명명한다.
+
+## 5. 에러 처리
+
+&nbsp;`try...catch`는 동기적으로만 사용가능하다.
+
+```javascript
+function foo() {
+  setTimeout(function () {
+    baz.bar();
+  }, 100);
+}
+
+try {
+  foo(); // 나중에 전역 에러 발생
+} catch (err) {
+  // 실행 X
+}
+```
+
+콜백에서 에러 처리에 과한 몇가지 표준이 있다. 그중 '에러-우선 콜백'(Error-First Callback)을 알아본다.
+
+```javascript
+function foo(cb) {
+  setTimeout(function () {
+    try {
+      var x = baz.bar();
+      cb(null, x);
+    } catch (err) {
+      cb(err);
+    }
+  }, 100);
+}
+
+foo(function (err, val) {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log(val);
+  }
+});
+```
+
+이런 패턴을 이용해서 에러를 처리할 수 있지만, 여러 조건문이 추가되고 조합되면 콜백지옥에 빠지기 쉽다. 이제 프로미스의 `Reject`처리를 보자. 두 번째 인자로 받은 콜백을 `Reject`시 호출하지만 `Resolve`시 호출되는 콜백에서 에러가 발생하면 포착할 수 없다.
+
+```javascript
+var p = Promise.resolve(42);
+
+p.then(
+  function fullfilled(msg) {
+    console.log(msg.toLowerCase()); // Error
+  },
+  function rejected(err) {
+    // 실행되지 않는다.
+  }
+);
+```
+
+`rejected`의 소속은 프로미스 `p`고 `p`는 `42` 값으로 이루어진 상태다. 이때 `p`는 불변값이고 에러는 `then`에서 반환하는데 이 반환한 `Error`값을 가지는 프로미스를 포착할 방법이 없다. 조용히 에러가 묻혀버리기 쉬운 구조다.
+
+### 절망의 구덩이
+
+&nbsp;프로그램은 성공적으로 처리되도록 만들고 실행할 때 실패하도록 만들어야 한다. 하지만 프로미스 에러 처리는 반대의 방식으로 설계돼 있다. 따라서 에러가 묻히는 것을 막기 위해서 무조건 `catch()`를 써야한다고 주장하는 개발자들이 있다.
+
+프로미스에서 에러를 반환하면 연쇄적으로 그냥 전파돼서 마지막 `catch()`까지 전파된다. 하지만 `catch()`에서도 프로미스를 반환하는데, 이 프로미스에서 에러가 발생하면 잡을 수 없다.
+
+### 잡히지 않은 에러 처리
+
+&nbsp;일부 라이브러리는 전역 범위로 에러를 던지는 대신 특정 메서드가 호출되도록 해놓았다. 반면 프로미스 끝에 `done()`을 붙여서 완료를 알려야한다는 사람도있다. 하지만 `done()`은 ES6 표준에 없다.
+
+브라우저는 객체가 GC될지 정확히 알고 추적할 수 있다. 또한 버려진 프로미스가 어떤 이유로 버려졌는지 콘솔창에 표시할 수 있다. 하지만 프로미스가 제대로 GC되지 않으면 도움되지 않는다.
+
+### 성공의 구덩이
+
+&nbsp;프로미스가 `Reject`되면 엔진은 개발자 콘솔창에 이 사실을 알린다. 개발자는 콘솔창에 이 알림이 뜨기 전에 에러 처리를 하던지, 명시적으로 `defer()`와 같은 입력으로 받은 프로미스를 단순 반환하는 메소드를 호출할 수 있다.
+
+```javascript
+var p = Promise.reject('fail').defer();
+
+foo(42).then(
+  function fulfilled() {
+    return p;
+  },
+  function rejected(err) {
+    // 에러처리
+    console.log('work');
+  }
+);
+```
+
+위와같은 경우 `defer()`때문에 콘솔창에 오류가 나타날 것이다. 이렇게 에러 처리를 나중으로 미루겠다는 의사를 밝히는 것이 '성공의 구덩이'설계다.
+
+## 6. 프라미스 패턴
+
+&nbsp;프로미스 연쇄 패턴말고도 좀 더 추상화한 형태의 비동기 패턴의 변형이 많다.
+
+### Promise.all([])
+
+&nbsp;모든 작업이 다 끝나야 다음으로 넘어간다. 다음과 같이 사용한다.
+
+```javascript
+var p1 = request('http://some.url.1/');
+var p2 = request('http://some.url.2/');
+
+Promise.all([p1, p2])
+  .then(function (msg) {
+    return request('http://some.url.3/' + msg.join(','));
+  })
+  .then(function (msg) {
+    console.log(msg);
+  });
+```
+
+또한 단 한 개의 프로미스에서 `Reject()`가 반환되면 다른 프로미스 결과도 무효가 된다. 프로미스마다 에러를 처리하는 습관을 들여야한다.
+
+### Promise.race([])
+
+&nbsp;걸쇠 패턴을 구현한 것이 `race`다. 하나라도 `Reject()`를 반환하면 모두가 버려진다.
+
+```javascript
+var p1 = request('http://some.url.1/');
+var p2 = request('http://some.url.2/');
+
+Promise.race([p1, p2])
+  .then(function (msg) {
+    return request('http://some.url.3/' + msg);
+  })
+  .then(function (msg) {
+    console.log(msg);
+  });
+```
+
+#### 타임아웃 경합
+
+&nbsp;`Promise.race([])`를 이용해서 타임아웃 패턴을 구현할 수 있다.
+
+#### 결론
+
+&nbsp;무시된 프로미스는 취소는 안되고 조용히 묻어버린다. 그래서 타임아웃 상황에서 특정 일을 하고싶다면 `finally`를 이용한다.
+
+### all([]) / race([])의 변형
+
+&nbsp;다음과 같은 변형 패턴을 자주 사용한다.
+
+- none([])
+- any([])
+- first([])
+- last([])
+
+### 동시 순회
+
+&nbsp;프로미스 리스트에서 각각의 원소에 어떤 처리를 하고 싶은 경우가 있다. 다음과 같이 직접 구현해서 사용할 수 있다.
+
+```javascript
+Promise.map = function (vals, cb) {
+  return Promise.all(
+    vals.map(function (val) {
+      return new Promise(function (resolve) {
+        cb(val, resolve);
+      });
+    })
+  );
+};
+```
+
+## 7. 프라미스 API 복습
+
+### new Promise() 생성자
+
+&nbsp;다음과 같이 사용한다.
+
+```javascript
+var p = new Promise(function (resolve, reject) {
+  resolve();
+  reject();
+});
+```
+
+`resolve()`에 들어온 값은 프로미스거나 데너블 값이며 재귀적으로 풀어보고 최종 값을 받아들인다.
+
+### Promise.resolve()와 Promise.reject()
+
+&nbsp;`Promise.reject()`는 버려진 프로미스를 생성하는 지름길이다.
+
+```javascript
+var p1 = new Promise(function (resolve, reject) {
+  reject('rej');
+});
+
+var p2 = Pormise.reject('rej');
+
+// p1과 p2는 같다.
+```
+
+`Promise.resolve()`는 데너블한 값을 풀어서 최종 값을 반환한다. 또한 진짜 프로미스를 넣어도 아무 일도 안일어난다.
+
+### then()과 catch()
+
+&nbsp;프로미스가 귀결되면 둘 중 하나가 비동기적으로 호출된다.
+
+```javascript
+p.then(fulfilled);
+p.then(fulfilled, rejected);
+p.catch(rejected); // p.then(null, rejected)
+```
+
+### Promise.all([])과 Promise.race([])
+
+&nbsp;`Promise.all([])`은 모든 프로미스가 완료 돼야한다. 하나라도 실패하면 모두 실패한다. `Promise.race([])`는 최초로 `resolve` 혹은 `reject`된 프로미스만 반환한다.
+
+## 8. 프라미스 한계
+
+### 시퀸스 에러 처리
+
+&nbsp;연쇄에서 에러발생은 조용히 묻혀버리기 쉽다. 따라서 적절하게 `catch()`와 에러처리를 이용해야한다.
+
+### 단일값
+
+&nbsp;프로미스는 하나의 값만 반환한다. 이는 단점이 될 수 있다.
+
+#### 값을 분할
+
+&nbsp;이런 경우 2개 이상의 프로미스로 분해해보자. 원하는 계산을 별도의 함수로 분리할 수 있을 것이다.
+
+#### 인자를 풀기/퍼뜨리기
+
+&nbsp;`Destructure`를 이용해서 더 깔끔한 코드를 만들 수 있다.
+
+### 단일 귀결
+
+&nbsp;프로미스가 1회만 귀결된다는 것은 중요한 본질이다. 우리는 다음과 같은 코드를 많이 사용한다.
+
+```javascript
+click('#mybtn', function (evt) {
+  var btnId = evt.currentTarget.id;
+
+  request('httP;//some.url.1/?id=' + btnId).then(function (text) {
+    console.log(text);
+  });
+});
+```
+
+하지만 관심사의 분리(이벤트 응다, 이벤트 처리)를 잘 못하고 있기 때문에 헬퍼를 이용해서 적절하게 바꿔주는 것이 좋다.
+
+### 타성
+
+&nbsp;콜백 코드를 프로미스 코드로 리팩터링할 때 `wrap`과 같은 헬퍼를 이용할 수 있다.
+
+### 프라미스는 취소 불가
+
+&nbsp;프로미스는 도중에 취소할 수 없다. 여러 꼼수가 있지만 사용하지 않는 편이 좋다. 또한 프로미스 취소는 더 상위 프로미스 추상화 수준에서 구현해야 할 기능이기 때문에 라이브러리를 찾아보자.
+
+### 프라미스 성능
+
+&nbsp;콜백과 프로미스를 비교해볼 때 코드 조각이 얼마나 많은지 비교하면 프로미스가 약간 더 느리다. 하지만 콜백과 프로미스는 본질적으로 비교할 수 없다. 또한 이런 약간의 느림보다 프로미스가 가져다주는 믿음성, 예측성, 조합성과 같은 장점이 더 크다.
+
+## 9. 정리하기
+
+&nbsp;프로미스는 제어의 역전 문제를 해결한다. 그렇다고 콜백을 완전히 없애는 건 아니다. 적절하게 사용하자. 그리고 프로미스 연쇄는 비동기 흐름을 순차적으로 표현할 수 있는 좋은 방법이다.
