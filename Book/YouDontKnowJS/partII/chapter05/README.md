@@ -2,7 +2,7 @@
 
 &nbsp;렉시컬 스코프에 대해 제대로 이해했다면 클로저는 이해하기 쉽다.
 
-## 1. 꺠달음
+## 1. 깨달음
 
 &nbsp;클로저는 새로운 문법이나 도구가 아닌 자바스크립트 모든 곳에 존재한다. 그저 받아들이면 된다. 클로저는 렉시컬 스코프에 의존해 코드를 작성한 결과로 나타난다.
 
@@ -59,7 +59,7 @@ function wait(message) {
   }, 1000);
 }
 
-wait("Hello, closure!");
+wait('Hello, closure!');
 ```
 
 `wait()`실행 1초 후, `wait`의 내부 스코프는 사라져야 하지만 클로저를 계속 가지고 있기 때문에 `message`를 참조할 수 있다.
@@ -113,7 +113,7 @@ for (let i = 1; i <= 5; i++) {
 
 ```javascript
 function CoolModule() {
-  var something = "cool";
+  var something = 'cool';
   var another = [1, 2, 3];
 
   function doSomething() {
@@ -121,7 +121,7 @@ function CoolModule() {
   }
 
   function doAnother() {
-    console.log(another.join(" ! "));
+    console.log(another.join(' ! '));
   }
 
   return {
@@ -145,7 +145,7 @@ foo.doAnother(); // 1 ! 2 ! 3
 
 ```javascript
 var foo = (function CoolModule() {
-  var something = "cool";
+  var something = 'cool';
   var another = [1, 2, 3];
 
   function doSomething() {
@@ -153,7 +153,7 @@ var foo = (function CoolModule() {
   }
 
   function doAnother() {
-    console.log(another.join(" ! "));
+    console.log(another.join(' ! '));
   }
 
   return {
@@ -188,7 +188,7 @@ var foo = (function CoolModule(id) {
   };
 
   return publicAPI;
-})("foo module");
+})('foo module');
 
 foo.identify(); // foo module
 foo.change();
@@ -220,9 +220,9 @@ var MyModules = (function Manager() {
   };
 })();
 
-MyModules.define("bar", [], function () {
+MyModules.define('bar', [], function () {
   function hello(who) {
-    return "Let me introduce: " + who;
+    return 'Let me introduce: ' + who;
   }
 
   return {
@@ -230,8 +230,8 @@ MyModules.define("bar", [], function () {
   };
 });
 
-MyModules.define("foo", ["bar"], function (bar) {
-  var hungry = "hippo";
+MyModules.define('foo', ['bar'], function (bar) {
+  var hungry = 'hippo';
   function awesome() {
     console.log(bar.hello(hungry).toUpperCase());
   }
@@ -241,10 +241,10 @@ MyModules.define("foo", ["bar"], function (bar) {
   };
 });
 
-var bar = MyModules.get("bar");
-var foo = MyModules.get("foo");
+var bar = MyModules.get('bar');
+var foo = MyModules.get('foo');
 
-console.log(bar.hello("hippo")); // Let me introduce: hippo
+console.log(bar.hello('hippo')); // Let me introduce: hippo
 
 foo.awesome(); // LET ME INTRODUCE: HIPPO
 ```
@@ -256,22 +256,22 @@ foo.awesome(); // LET ME INTRODUCE: HIPPO
 ```javascript
 // bar.js
 function hello(who) {
-  return "Let me introduce: " + who;
+  return 'Let me introduce: ' + who;
 }
 
 // foo.js
-import hello from "bar";
+import hello from 'bar';
 
-var hungry = "hippo";
+var hungry = 'hippo';
 function awesome() {
   console.log(hello(hungry).toUpperCase());
 }
 
 // baz.js
-import * as foo from "foo";
-import * as bar from "bar";
+import * as foo from 'foo';
+import * as bar from 'bar';
 
-console.log(bar.hello("rhino")); // Let me introduce: rhino
+console.log(bar.hello('rhino')); // Let me introduce: rhino
 foo.awesome(); // LET ME INTRODUCE: HIPPO
 ```
 
