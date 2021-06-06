@@ -1,6 +1,6 @@
 # CHAPTER 5 프로토타입
 
-&nbsp;프로토타이 채이닝에 대해서 알아본다.
+&nbsp;프로토타입 채이닝에 대해서 알아본다.
 
 ## 1. [[Prototype]]
 
@@ -27,7 +27,7 @@ myObject.a; // 2
 &nbsp;`foo` 프로퍼티가 `myObject` 객체와 이 객체를 기점으로 한 [[Prototype]] 연쇄의 상위 여러 곳에서 발견될 때 가려짐이라 한다.
 
 ```javascript
-myObject.foo = "bar";
+myObject.foo = 'bar';
 ```
 
 만약 `myObject`에 `foo`가 없고 [[Prototype]] 연쇄 상위 수준에 `foo`가 있을 때 `myObject.foo = "bar"`할당문은 다음 세 가지 경우의 수를 따른다.
@@ -48,15 +48,15 @@ var myObject = Object.create(anotherObject);
 anotherObject.a; // 2
 myObject.a; // 2
 
-anotherObject.hasOwnProperty("a"); // true
-myObject.hasOwnProperty("a"); // false
+anotherObject.hasOwnProperty('a'); // true
+myObject.hasOwnProperty('a'); // false
 
 myObject.a++; // 암시적 가려짐 발생
 
 anotherObject.a; // 2
 myObject.a; // 3
 
-myObject.hasOwnProperty("a"); // true
+myObject.hasOwnProperty('a'); // true
 ```
 
 `myObject.a++`는 `myObject.a = myObject.a + 1`이 된다. 그래서 [[Prototype]]을 통해서 [[Get]]을 찾고 `anotherObject.a`에서 현재 값 2를 얻어서 1을 더한 후, 결과를 [[Put]]으로 `myObject`에 프로퍼티 `a`를 생성한 뒤 할당한다.
@@ -119,8 +119,8 @@ Foo.prototype.myName = function () {
   return this.name;
 };
 
-var a = new Foo("a");
-var b = new Foo("b");
+var a = new Foo('a');
+var b = new Foo('b');
 
 a.myName(); // a
 b.myName(); // b
@@ -150,7 +150,7 @@ function Foo() {
 }
 Foo.prototype = {};
 
-Object.defineProperty(Foo.prototype, "constructor", {
+Object.defineProperty(Foo.prototype, 'constructor', {
   enumerable: false,
   writable: true,
   configurable: true,
@@ -185,7 +185,7 @@ Bar.prototype.myLabel = function () {
   return this.label;
 };
 
-var a = new Bar("a", "obj a");
+var a = new Bar('a', 'obj a');
 
 a.myName(); // a
 a.myLabel(); // obj a
@@ -220,7 +220,7 @@ function Foo() {
   // ...
 }
 
-Foo.prototype.blah = "blahblah";
+Foo.prototype.blah = 'blahblah';
 var a = new Foo();
 
 a instanceof Foo; // true
@@ -237,7 +237,7 @@ Foo.prototype.isPrototypeOf(a); // true
 ES5부터 `getPrototypeOf`를 통해서 [[Prototype]]을 곧바로 조회할 수 있다. 또한 `__proto__`(Dunder Proto)를 통해서 [[Prototype]]에 접근할 수 있게 됐다. 근데 `__proto__`는 게터/세터에 가깝다.
 
 ```javascript
-Object.defineProperty(Object.prototype, "__proto__", {
+Object.defineProperty(Object.prototype, '__proto__', {
   get: function () {
     return Object.getPrototypeOf(this);
   },
@@ -261,7 +261,7 @@ Object.defineProperty(Object.prototype, "__proto__", {
 ```javascript
 var foo = {
   something: function () {
-    console.log("Show");
+    console.log('Show');
   },
 };
 
