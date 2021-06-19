@@ -462,3 +462,264 @@ run(foo); // custom 유틸리티 사용
 #### 프라미스 숨김
 
 &nbsp;제너레이터 내부에 얼마만큼의 프로미스 로직을 넣을지 신중히 판단해야 한다. 프로미스 로직을 어떤 함수로 뽑아내고 `yield`와 함께 제너레이터에서 호출하는 식의 코드는 흐름 제어를 정교하게 다루기 유용하다. 의도적으로 추상화 해야지 표현하기 편하다. 간결함이라는 대가로 복잡도는 증기하기 마련이다.
+
+## 5. 제너레이터 위임
+
+&nbsp;다음 코드를 보자.
+
+```javascript
+function* foo() {
+  var r2 = yield request('http://some.url.2');
+  var r3 = yield request('http://some.url.3/?v=' + r2);
+
+  return r3;
+}
+
+function* bar() {
+  var r1 = yield request('http://some.url.1');
+  var r3 = yield run(foo);
+  console.log(r3);
+}
+
+run(bar);
+```
+
+위 코드에서 `*bar()`안에서 다시 `run`을 통해서 `*foo()`를 호출한다. 이때 `*foo()`호출을 `*bar()`안으로 합하고자 한다면 'yield 위임'을 사용하는 것이 좋다. 더 간단한 코드를 보자.
+
+```javascript
+function *foo() {
+  console.log("*foo() 시작");
+  yield 3;
+  yield 4;
+  console.log("*foo() 끝");
+}
+
+function *bar() {
+  yield 1;
+  yield 2;
+  yield *foo(); // yield 위임
+  yield 5;
+}
+
+var it = var();
+
+it.next().value; // 1
+it.next().value; // 2
+it.next().value; // *foo() 시작
+// 3
+it.next().value; // 4
+it.next().value; // *foo() 끝
+// 5
+```
+
+`foo()`를 호출하면 이터레이터를 생성하고 `yield *`는 이터레이터 인스턴스에 관한 제어권을 `*foo()`에게 위임한다. 위 방식을 앞의 예제에 적용하면 다음과 같다.
+
+```javascript
+function* foo() {
+  var r2 = yield request('http://some.url.2');
+  var r3 = yield request('http://some.url.3/?v=' + r2);
+
+  return r3;
+}
+
+function* bar() {
+  var r1 = yield request('http://some.url.1');
+  var r3 = yield* foo();
+  console.log(r3);
+}
+
+run(bar);
+```
+
+### 왜 위임을?
+
+&nbsp;코드를 조직화하고 일반 함수 호출과 맞추기 위해서다. 위와같이 `*bar()`내부에서 `*foo()`의 실행 단계를 수동으로 순회할 수 있다.
+
+### 메시지 위임
+
+&nbsp;yield 위임은 양방향 메시징에도 쓰인다. 또한 예외도 위임할 수 있다.
+
+### 비동기성을 위임
+
+&nbsp;위 `ajax`요청 예제와 동일하다.
+
+### 위임 '재귀'
+
+&nbsp;스스로에게 yield 위임하는 제너레이터 작성 시에도 쓸 수 있다.
+
+```javascript
+function* foo(val) {
+  if (val > 1) {
+    // 재귀
+    val = yield* foo(val - 1);
+  }
+  return yield request('http://some.url/?v=' + val);
+}
+
+function* bar() {
+  var r1 = yield* foo(3);
+  console.log(r1);
+}
+
+run(bar);
+```
+
+## 6. 제너레이터 동시성
+
+&nbsp;`ajax`응답 처리를 경합 조건이 발생하지 않게끔 다음과 같은 코드를 이용했었다.
+
+```javascript
+function response(data) {
+  if (data.url == 'http://some.url.1') {
+    res[0] = data;
+  } else if (data.url == 'http://some.url.2') {
+    res[1] = data;
+  }
+}
+```
+
+위 코드를 제너레이터로 구현하면 다음과 같다.
+
+```javascript
+var res = [];
+
+function* reqData(url) {
+  res.push(yield request(url));
+}
+```
+
+두 요청간 상호작용이 필요한 경우는 다음과 같이 해결할 수 있을 것이다.
+
+```javascript
+var res = [];
+
+function* reqData(url) {
+  var data = yield request(url);
+  yield;
+  res.push(data);
+}
+
+var it1 = reqData('http://some.url.1');
+var it2 = reqData('http://some.url.2');
+
+var p1 = it.next();
+var p2 = it.next();
+
+p1.then(function (data) {
+  it1.next(data);
+});
+
+p2.then(function (data) {
+  it2.next(data);
+});
+
+Promise.all([p1, p2]).then(function () {
+  it1.next();
+  it2.next();
+});
+```
+
+두 `request`가 동시에 독립적으로 실행된다. 다음으로 `runAll()`이란 유틸리티를 생각해보자.
+
+```javascript
+var res = [];
+
+runAll(
+  function* () {
+    var p1 = request('http://some.url.1');
+    yield;
+    res.push(yield p1);
+  },
+  function* () {
+    var p2 = request('http://some.url.2');
+    yield;
+    res.push(yield p2);
+  }
+);
+```
+
+## 7. 썽크
+
+&nbsp;'Thunk'는 다른 함수를 호출할 운명을 가진 인자가 없는 함수다. 다시 말하면 함수를 감싸서 실행을 지연시키는 함수가 'Thunk'다. 다음과 같이 사용할 수 있다.
+
+```javascript
+function foo(x, y, cb) {
+  setTimeout(function () {
+    cb(x + y);
+  }, 1000);
+}
+
+function fooThunk(cb) {
+  foo(3, 4, cb);
+}
+
+fooThunk(function (sum) {
+  console.log(sum); // 7
+});
+```
+
+JS에서 Thunk를 이용하는 표준적인 방법은 Thunk를 만드는 함수를 생성하는 것이다.
+
+```javascript
+function thunkify() {
+  return function () {
+    var args = [].slice.call(arguments);
+    return function (cb) {
+      args.push(cb);
+      return fn.apply(null, args);
+    };
+  };
+}
+```
+
+### s/promise/thunk
+
+&nbsp;Thunk와 Promise를 비교하면 Promise가 훨씬 더 능력 좋고 믿을 수 있다. 하지만 어떤 값을 요청해서 비동기적 응답을 받는다는 점은 같다. 이런 점을 이용하면 다음과 같이 사용할 수 있다.
+
+```javascript
+function* foo() {
+  var val = yield request('http://some.url.1');
+  console.log(val);
+}
+
+run(foo);
+```
+
+제너레이터 입장에서는 promise인지 thunk인지 신경쓸 필요가 없다.
+
+## 8. ES6 이전 제너레이터
+
+&nbsp;트랜스파일러에서 기능을 제공하고 있지만 다음과 같이 직접 구현할 수도 있을 것이다.
+
+### 수동 변환
+
+&nbsp;제너레이터를 수동으로 트랜스파일하는 방법이다.
+
+```javascript
+function foo(url) {
+  // ...
+  return {
+    next: function (v) {},
+    throw: function (e) {},
+  };
+}
+```
+
+우선 이터레이터를 반환하도록 한다. 그리고 클로저에 상태 추적용으로 사용할 변수를 추가한다.
+
+```javascript
+function foo(url) {
+  var state;
+  // ...
+}
+```
+
+`Switch`문을 통해서 상태에 따라서 처리하는 `process`함수를 추가하고, 상태가 변할때마다 `process`를 호출하도록 한다.
+
+### 자동 변환
+
+&nbsp;앞에서 봤듯이 제너레이터는 개념적으로 `state`와 `switch`로 동작한다. 이런 개념만 잘 알고, 이제는 트랜스파일러가 알아서 잘 변경해줄 것이다.
+
+## 9. 정리하기
+
+&nbsp;제너레이터는 완전 실행하지 않고 실행도중 멈출 수 있는 새로운 유형의 함수다. `yield`를 통해서 멈출 수 있고 이터레이터의 `next`를 통해서 다시 시작할 수 있다. 또한 양방향 메시징 체계가 있다. 이런 제너레이터의 핵심은 비동기 흐름을 제너레이터를 통해서 동기/순차적 형태로 표현할 수 있다는 것이다. 따라서 코드를 자연스럽게 이해하거나 콜백식 비동기 코드의 신뢰성과 가독성을 해결할 수 있다.
