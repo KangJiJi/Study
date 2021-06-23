@@ -98,3 +98,19 @@ addEventListener('connect', function (e) {
 ### 웹 워커 폴리필
 
 &nbsp;구형 브라우저에서는 적절한 폴리필을 이용하자.
+
+## 2. SIMD
+
+&nbsp;SIMD는 Single Instruction, Multiple Data의 약자로 여러 데이터 비트를 병렬로 처리하는 일이다. 추후에 JS 표준으로 추가될 수 있지만 아직은 추가되지 않았다.
+
+## 3. asm.js
+
+&nbsp;asm.js는 JS에서 고도로 최적화 가능한 부분 집합이다. 하지만 현재는 Web assembly가 있다.
+
+## 4. 정리하기
+
+&nbsp;JS는 단일 스레드로 동작하면서 이벤트 루프를 통해 비동기를 만족한다. 따라서 프로그램 수준에서 성능을 개선할 방법을 알아봤다.
+
+- 웹 워커
+- SIMD 연산
+- asm.js
