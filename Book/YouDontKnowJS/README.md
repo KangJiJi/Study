@@ -57,3 +57,5 @@ You don't know js 정리<br>
 ### 04. [제너레이터](https://github.com/KangJiJi/Study/tree/master/Book/YouDontKnowJS/partIV/chapter04)
 
 ### 05. [프로그램 성능](https://github.com/KangJiJi/Study/tree/master/Book/YouDontKnowJS/partIV/chapter05)
+
+### 06. [벤치마킹과 튜닝](https://github.com/KangJiJi/Study/tree/master/Book/YouDontKnowJS/partIV/chapter06)
