@@ -43,7 +43,8 @@
 ```javascript
 class MazeFactory {
   static _instance = 0;
-  static instance(style) {
+  static instance() {
+    const style = getEnv('MAZE_STYLE');
     if (_instance === 0) {
       if (style === 'bombed') _instance = new BombedMazeFactory();
       else if (style === 'enchanted') _instance = new EnchantedMazeFactory();
