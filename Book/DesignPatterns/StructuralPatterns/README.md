@@ -1,6 +1,6 @@
 # 구조 패턴(Structural Patterns)
 
-## 01. [적응자(Adapter)]()
+## 01. [적응자(Adapter)](https://github.com/KangJiJi/Study/tree/master/Book/DesignPatterns/StructuralPatterns/Adapter)
 
 ## 02. [가교(Bridge)]()
 
