@@ -8,7 +8,7 @@
 
 ## 04. [장식자(Decorator)](https://github.com/KangJiJi/Study/tree/master/Book/DesignPatterns/StructuralPatterns/Decorator)
 
-## 05. [퍼사드(Facade)]()
+## 05. [퍼사드(Facade)](https://github.com/KangJiJi/Study/tree/master/Book/DesignPatterns/StructuralPatterns/Facade)
 
 ## 06. [플라이급(Flyweight)]()
 
