@@ -10,6 +10,6 @@
 
 ## 05. [퍼사드(Facade)](https://github.com/KangJiJi/Study/tree/master/Book/DesignPatterns/StructuralPatterns/Facade)
 
-## 06. [플라이급(Flyweight)]()
+## 06. [플라이급(Flyweight)](https://github.com/KangJiJi/Study/tree/master/Book/DesignPatterns/StructuralPatterns/Flyweight)
 
 ## 07. [프록시(Proxy)]()
