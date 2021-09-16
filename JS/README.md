@@ -7,3 +7,5 @@
 ## 03. [Array method](https://github.com/KangJiJi/Study/tree/master/JS/ArrayMethod)
 
 ## 04. [String method](https://github.com/KangJiJi/Study/tree/master/JS/StringMethod)
+
+## 05. [Event loop 2](https://github.com/KangJiJi/Study/tree/master/JS/EventLoop2)
