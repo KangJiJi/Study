@@ -1,6 +1,6 @@
 # 행동 패턴(Behavioral Patterns)
 
-## 01. [책임 연쇄(Chain of Responsibility))]()
+## 01. [책임 연쇄(Chain of Responsibility)](https://github.com/KangJiJi/Study/tree/master/Book/DesignPatterns/BehavioralPatterns/ChainOfResponsibility)
 
 ## 02. [명령(Command)]()
 
