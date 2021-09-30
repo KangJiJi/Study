@@ -12,4 +12,4 @@
 
 ## 06. [플라이급(Flyweight)](https://github.com/KangJiJi/Study/tree/master/Book/DesignPatterns/StructuralPatterns/Flyweight)
 
-## 07. [프록시(Proxy)]()
+## 07. [프록시(Proxy)](https://github.com/KangJiJi/Study/tree/master/Book/DesignPatterns/StructuralPatterns/Proxy)
