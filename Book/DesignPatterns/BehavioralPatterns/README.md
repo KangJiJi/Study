@@ -12,7 +12,7 @@
 
 ## 06. [메멘토(Memento)](https://github.com/KangJiJi/Study/tree/master/Book/DesignPatterns/BehavioralPatterns/Memento)
 
-## 07. [감시자(Observer)]()
+## 07. [감시자(Observer)](https://github.com/KangJiJi/Study/tree/master/Book/DesignPatterns/BehavioralPatterns/Observer)
 
 ## 08. [상태(State)]()
 
