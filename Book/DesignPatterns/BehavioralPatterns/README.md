@@ -10,7 +10,7 @@
 
 ## 05. [중재자(Mediator)]()
 
-## 06. [메멘토(Memento)]()
+## 06. [메멘토(Memento)](https://github.com/KangJiJi/Study/tree/master/Book/DesignPatterns/BehavioralPatterns/Memento)
 
 ## 07. [감시자(Observer)]()
 
