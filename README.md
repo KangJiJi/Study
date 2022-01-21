@@ -35,3 +35,5 @@
 ## [NextJS 맛보기](https://github.com/KangJiJi/Study/tree/master/Posting/NextJS)
 
 ## [리액트에서 setInterval](https://github.com/KangJiJi/Study/tree/master/Posting/ReactSetInterval)
+
+## [3주간의 기억](https://github.com/KangJiJi/Study/tree/master/Posting/MemoriesOfThreeWeeks)
