@@ -39,3 +39,5 @@
 ## [3주간의 기억](https://github.com/KangJiJi/Study/tree/master/Posting/MemoriesOfThreeWeeks)
 
 ## [Hadoop Ecosystme](https://github.com/KangJiJi/Study/tree/master/Posting/HadoopEcosystem)
+
+## [테스트 가능한 코드 만들기](https://github.com/KangJiJi/Study/tree/master/Posting/WriteTestCode)
